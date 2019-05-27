@@ -1,0 +1,6 @@
+Responsive TreeGrid CSS styles
+For IE10 and newer browsers
+...Grid.css is base style for grid and sheet
+...Gantt.css is style for Gantt chart
+
+To modify these styles modify their sources in /GridSrc/ directory and compile them by /GridCSS/ShrinkCSS.exe compiler

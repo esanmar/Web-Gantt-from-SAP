@@ -1,0 +1,1227 @@
+/* -------------------------------------------------------------------------------------------------------------------------- */
+/*                                              TreeGrid CSS style for Gantt chart                                         */
+
+/*                                                         Colors style                                                    */
+/* -------------------------------------------------------------------------------------------------------------------------- */
+
+/* --- Gantt type cell base class for <TD> tag, used with other cell classes from Grid.css like GMCell --- */
+.CCGantt { border-left:1px solid #ffffff; border-top:0px none!important; border-bottom:0px none!important; padding:0px!important; cursor:default; background:transparent!important; -webkit-user-select:none; -moz-user-select:none; }
+.CCGanttHeaderInner { padding:0px 0px 0px 1px!important; }
+.CCRowHeightGantt { }
+.CCRowHeightGanttTouch { }
+
+
+
+
+/* -------------------------------------------------------------------------------------------------------------------------- */
+/*                                                        Gantt bar                                                        */
+/* -------------------------------------------------------------------------------------------------------------------------- */
+
+/* Gantt bar is used for Main bar and for Run bar, except the Milestone and Stop types
+
+Gantt bar is composed from three div tags as <div SIZE><div OUTER><div INNER>TEXT</div></div></div>
+
+a) div SIZE tag controls only the bar position and width and has not set any CSS class
+b) div OUTER tag controls border, margin and outer padding of the bar by CSS classes
+c) div INNER tag controls background, inner padding and text attributes
+d) the TEXT is inner text or bar HTML. But for incomplete bar it consists of three div tags as <div GAUGE></div><div TEXT>TEXT</div><div END></div>
+
+OUTER and INNER tag can contain these CSS classes. The classes are defined in below order, the latter class overrides all the previous classes:
+OUTER class name contains flag "Out", INNER class name containt flag "In"
+
+
+If set <Cfg FastGantt = "1"/> , all run bars are composed only from one tag that contains all the classes. Now implemented only for run bar.
+For the 1), 2) and 5) uses special class with ..F prefix instead of the two ..In and ..Out classes
+For the 3) and 4) the one div tag has set both the ..In and ..Out classes
+All FastGantt bars must have the same outer height as border+padding+height!
+
+
+1) One base class
+   ..MainOut,       ..MainIn        Main bar
+   ..BoxOut,        ..BoxIn         Run Box type box
+   ..SolidOut,      ..SolidIn       Run Solid type box (not resizable)
+   ..FixedOut,      ..FixedIn       Run Fixed type box (not movable, not resizable)
+   ..LeftOut,       ..LeftIn        Run Left fixed type box (not movable, but resizable to the right)
+   ..RightOut,      ..RightIn       Run Right fixed type box (not movable, but resizable to the left)
+   ..EndOut,        ..EndIn         Run End type box
+   ..BoundOut,      ..BoundIn       Run Bound fixed type box
+   ..EndStartOut,   ..EndStartIn    Run End type box placed as the first box
+   ..BoundStartOut, ..BoundStartIn  Run Bound fixed type box placed as the first box
+   ..EmptyOut,      ..EmptyIn       Run Empty type. Shown only if it has defined Text or Class attribute
+   ..NbspOut,       ..NbspIn        Run Nbsp type
+
+1F) One base class used instead of 1) for FastGantt=1 
+   ..FMain                          Main bar
+   ..FBox                           Run Box type box
+   ..FSolid                         Run Solid type box (not resizable)
+   ..FFixed                         Run Fixed type box (not movable, not resizable)
+   ..FLeft                          Run Left fixed type box (not movable, but resizable to the right)
+   ..FRight                         Run Right fixed type box (not movable, but resizable to the left)
+   ..FEnd                           Run End type box
+   ..FBound                         Run Bound fixed type box
+   ..FEndStart                      Run End type box placed as the first box
+   ..FBoundStart                    Run Bound fixed type box placed as the first box
+   ..FEmpty                         Run Empty type. Shown only if it has defined Text or Class attribute
+   ..FNbsp                          Run Nbsp type
+
+2) One complete class, set only if the Complete >=0 OR the bar is critical, error or disabled
+   ..Out0,          ..In0           Not started task
+   ..Out50,         ..In50          Incomplete task. It contains the three inner divs like as <div GAUGE></div><div TEXT>TEXT</div><div END></end>
+                                       ..CompleteGauge      Shows the percentage completion state
+                                       ..CompleteText       Shows the bar inner text or html
+                                       ..CompleteEnd        Internal class, should not be changed
+   ..Out100,        ..In100         Complete task
+   ..Out0Crit,      ..In0Crit       Not started task on critical path. Used also when Complete is null.
+   ..Out50Crit,     ..In50Crit      Incomplete task on critical path. It contains the three inner divs, ..CompleteGauge, ..CompleteText and ..CompleteEnd
+   ..Out100Crit,    ..In100Crit     Complete task on critical path
+   ..Out0Err,       ..In0Err        Not started task beyond critical path. Used also when Complete is null.
+   ..Out50Err,      ..In50Err       Incomplete task beyond critical path. It contains the three inner divs, ..CompleteGauge, ..CompleteText and ..CompleteEnd
+   ..Out100Err,     ..In100Err      Complete task beyond critical path
+   ..OutDisabled,   ..InDisabled    Disabled bar
+   ..OutError,      ..InError       Run bar error (overlaid). Used only if set GanttRunErrors>=1
+
+2F) One complete class used instead of 2) for FastGantt=1, set only if the Complete >=0 OR the bar is critical, error or disabled
+   ..F0                             Not started task
+   ..F50                            Incomplete task. It contains the three inner divs like as <div GAUGE></div><div TEXT>TEXT</div><div END></end>
+                                       ..FCompleteGauge      Shows the percentage completion state
+                                       ..FCompleteText       Shows the bar inner text or html
+   ..F100                           Complete task
+   ..F0Crit                         Not started task on critical path. Used also when Complete is null.
+   ..F50Crit                        Incomplete task on critical path. It contains the three inner divs, ..FCompleteGauge, ..FCompleteText and ..CompleteEnd
+   ..F100Crit                       Complete task on critical path
+   ..F0Err                          Not started task beyond critical path. Used also when Complete is null.
+   ..F50Err                         Incomplete task beyond critical path. It contains the three inner divs, ..CompleteGauge, ..CompleteText and ..CompleteEnd
+   ..F100Err                        Complete task beyond critical path
+   ..FDisabled                      Disabled bar
+   ..FError                         Run bar error (overlaid). Used only if set GanttRunErrors>=1
+   ..FErrorIE                       Run bar error used for IE9 and below to avoid bugs in these versions
+   
+3) One custom class, set only if GanttClass or Run Class is set
+   ..XXXOut,        ..XXXIn         where XXX is the custom class name, predefined are one Group class and 17 color classes. For backward compatibility there are also Flow and FlowG classes.
+
+4) One custom complete class, set only if GanttClass or Run Class is set and only if the Complete >=0 OR the bar is critical, error or disabled
+   ..XXXOut0,       ..XXXIn0        Not started task
+   ..XXXOut50,      ..XXXIn50       Incomplete task. It contains the three inner divs, ..CompleteGauge, ..CompleteText and ..CompleteEnd
+                                       ..XXXCompleteGauge      Shows the percentage completion state
+                                       ..XXXCompleteText       Shows the bar inner text or html
+   ..XXXOut100,     ..XXXIn100      Complete task
+   ..XXXOut0Crit,   ..XXXIn0Crit    Not started task on critical path. Used also when Complete is null.
+   ..XXXOut50Crit,  ..XXXIn50Crit   Incomplete task on critical path. It contains the three inner divs, ..CompleteGauge, ..CompleteText and ..CompleteEnd
+   ..XXXOut100Crit, ..XXXIn100Crit  Complete task on critical path
+   ..XXXOut0Err,    ..XXXIn0Err     Not started task beyond critical path. Used also when Complete is null.
+   ..XXXOut50Err,   ..XXXIn50Err    Incomplete task beyond critical path. It contains the three inner divs, ..CompleteGauge, ..CompleteText and ..CompleteEnd
+   ..XXXOut100Err,  ..XXXIn100Err   Complete task beyond critical path
+   ..XXXOutDisabled,..XXXInDisabled Disabled bar
+   ..XXXOutError,   ..XXXInError    Run bar error (overlaid)
+
+5) Run bar special classes
+   ..JoinLeft                       OUTER class only. The bar is joined on left side       
+   ..JoinRight                      OUTER class only. The bar is joined on right side
+   ..MoveOut,       ..MoveIn        Set to box that is being dragged by action GanttRunMove='Move'
+   ..RemoveOut,     ..RemoveIn      Set to box that is being dragged by action GanttRunMove='Remove'
+   ..CopyOut,       ..CopyIn        Set to box that is being dragged by action GanttRunMove='Copy'
+   ..UnknownOut,    ..UnknownIn     Replaces custom class. Set for box with unknown Type
+   ..NoneOut,       ..NoneIn        Custom class for box without style
+   ..SelectedOut,   ..SelectedIn    Selected box
+
+5F) Run bar special classes used instead of 5) for FastGantt=1
+   ..FJoinLeft                      The bar is joined on left side       
+   ..FJoinRight                     The bar is joined on right side
+   ..FMove,                         Set to box that is being dragged by action GanttRunMove='Move'
+   ..FRemove,                       Set to box that is being dragged by action GanttRunMove='Remove'
+   ..FCopy,                         Set to box that is being dragged by action GanttRunMove='Copy'
+   ..FUnknown,                      Replaces custom class. Set for box with unknown Type
+   ..FNone,                         Custom class for box without style
+   ..FSelected,                     Selected box
+
+6) Main bar special classes
+   ..LockedOut,     ..LockedIn      Locked main bar
+                    ..OuterIcons    INNER class only. The main bar contains side outer icons set by GanttIcons
+                    ..InnerIcons    INNER class only. The main bar contains side inner icons set by GanttIcons
+
+7) Adjacent class
+   ..Adjacent                       OUTER class only. Set only for GanttAdjacentBars='1' to remove space between boxes
+
+8) Hover classes, added when the bar is hovered (under mouse cursor)
+   It adds all the classes already set with the Hover suffix. OUTER classes only.
+   For example, if the bar has CSS: "GMGanttMainOut GMGanttOut0Crit" the hovered CSS will be: "GMGanttMainOut GMGanttOut0Crit GMGanttMainOutHover GMGanttOut0CritHover"
+   There are special hover classes: ..HoverGroup         Class added to all Run boxes in the same Group, if some box from the group is hovered
+                                    ..AdjacentHoverGroup Class added instead of HoverGroup when set GanttAdjacentBars='1'
+   For FastGantt=1 the classes have the GMF prefix.
+
+*/
+
+/* --- Base bar size definition --- */
+.CCGanttBaseOut { border:1px solid; margin:1px; margin-bottom:0px; padding:1px; }
+.CCGanttBaseIn { line-height:10px; padding-left:1px; }
+
+/* --- Main bar base --- */
+.CCGanttMainOut { 
+   border:1px solid black; margin:1px; margin-bottom:0px; padding:1px; background:white; overflow:hidden; 
+   }
+.CCGanttMainIn { 
+   overflow:hidden; font:bold 11px Arial; line-height:10px; width:100%!IE; white-space:nowrap; padding-left:1px; background:url(BackgroundsGantt.gif?v110) 0px -400px; color:yellow;
+   }
+
+/* --- Run bar base according to Type --- */
+.CCGanttEmptyOut,.CCGanttBoxOut,.CCGanttSolidOut,.CCGanttLeftOut,.CCGanttRightOut,.CCGanttFixedOut,
+.CCGanttBoundOut,.CCGanttBoundStartOut,.CCGanttEndOut,.CCGanttEndStartOut,.CCGanttNbspOut {
+   border:1px solid black; margin-left:1px; margin-right:1px; margin-top:1px; padding:1px; overflow:hidden; 
+   }
+.CCGanttEmptyIn,.CCGanttBoxIn,.CCGanttSolidIn,.CCGanttLeftIn,.CCGanttRightIn,.CCGanttFixedIn,
+.CCGanttBoundIn,.CCGanttBoundStartIn,.CCGanttEndIn,.CCGanttEndStartIn,.CCGanttNbspIn {
+   overflow:hidden; font:bold 11px Arial; line-height:10px; width:100%!IE; white-space:nowrap; padding-left:1px;
+   }
+.CCGanttEmptyOut { border:none; }
+.CCGanttEmptyIn { }
+.CCGanttNbspOut { border:none; border-top:1px dotted red; border-bottom:1px dotted red; margin-left:0px; margin-right:0px; padding-left:3px; padding-right:3px; }
+.CCGanttNbspIn { }
+.CCGanttBoxOut { background:white; }
+.CCGanttBoxIn { background:url(BackgroundsGantt.gif?v110) left -1400px; color:white; }
+.CCGanttSolidOut { background:white; }
+.CCGanttSolidIn { background:url(BackgroundsGantt.gif?v110) left -1700px; }
+.CCGanttFixedOut,.CCGanttLeftOut,.CCGanttBoundOut,.CCGanttBoundStartOut { 
+   border-left-style:solid!important; border-left-width:3px!important; margin-left:0px!important; padding-left:1px!important; background:white; 
+   }
+.CCGanttFixedOut,.CCGanttRightOut,.CCGanttBoundOut,.CCGanttBoundStartOut { 
+   border-right-style:solid!important; border-right-width:3px!important; background:white; padding-right:1px!important; background:white; 
+   }
+.CCGanttFixedIn,.CCGanttLeftIn,.CCGanttRightIn { background:url(BackgroundsGantt.gif?v110) left -1600px; }
+.CCGanttBoundIn,.CCGanttEndIn { background:url(BackgroundsGantt.gif?v110) left -1800px; }
+.CCGanttBoundStartIn,.CCGanttEndStartIn { background:url(BackgroundsGantt.gif?v110) left -1800px; }
+.CCGanttEdgeOut { display:none; }
+
+/* --- Run bar error (overlaid) --- */
+.CCGanttOutError { background:transparent; }
+.CCGanttInError { background:url(BackgroundsGantt.gif?v110) left -1900px; opacity:0.7; filter:alpha(opacity=70); }
+
+/* --- Run bar containers --- */
+.CCGanttContainer { border:1px dotted black; padding:0px 4px 0px 4px; overflow:hidden; }
+.CCGanttContainerL1 { border-color:green; background:#9ECB7F; }
+.CCGanttContainerL2 { border-color:red; background:#F7ECDC; }
+.CCGanttContainerL3 { border-color:blue; background:#ECDCF7; }
+
+/* --- Bar complete --- */
+.CCGanttOut0 { }
+.CCGanttIn0 {  background-position: 0px 0px; color:black; }
+.CCGanttOut0Err { }
+.CCGanttIn0Err {  background-position: 0px -500px; color:black; }
+.CCGanttOut0Crit { }
+.CCGanttIn0Crit {  background-position: 0px -600px; color:black; }
+.CCGanttOut50 { }
+.CCGanttIn50 { background-position: 0px -100px; padding-left:0px; color:white; }
+.CCGanttOut50Err { }
+.CCGanttIn50Err { background-position: 0px -700px; padding-left:0px; color:black; }
+.CCGanttOut50Crit { }
+.CCGanttIn50Crit { background-position: 0px -800px; padding-left:0px; color:black; }
+.CCGanttOut100,.CCGanttOut100Err,.CCGanttOut100Crit { }
+.CCGanttIn100,.CCGanttIn100Err,.CCGanttIn100Crit { background-position: 0px -300px; color:black; }
+.CCGanttCompleteGauge { margin-left:-2px; background:url(BackgroundsGantt.gif?v110) 0px -200px; height:250px; margin-bottom:-250px; overflow:hidden; }
+.CCGanttCompleteText { padding-left:1px; overflow:hidden; width:100%; font:bold 11px Arial; line-height:10px; white-space:nowrap; }
+.CCGanttCompleteEnd { height:250px; margin-bottom:-250px; overflow:hidden; }
+
+/* --- Run bar base FastGantt ---  */
+.CCFGanttBase { height:9px; margin:1px; border:1px solid; padding:1px; padding-left:2px; padding-right:2px; overflow:hidden; } /* Used only for calculations, all FastGantt bars must have the same outer height as border+padding+height */
+
+.CCFGanttEmpty,.CCFGanttBox,.CCFGanttSolid,.CCFGanttLeft,.CCFGanttRight,.CCFGanttFixed,
+.CCFGanttBound,.CCFGanttBoundStart,.CCFGanttEnd,.CCFGanttEndStart,.CCFGanttNbsp {
+   border:1px solid black; padding:1px; padding-left:2px; padding-right:2px; overflow:hidden; font:bold 11px Arial; line-height:10px; white-space:nowrap;
+   }
+.CCFGanttEmpty { border:0px solid white; padding:2px; padding-left:3px; padding-right:3px; }
+.CCFGanttNbsp { border:0px solid white; border-top:1px dotted red; border-bottom:1px dotted red; padding-left:3px; padding-right:3px; }
+.CCFGanttBox { background:url(BackgroundsGantt.gif?v110) left -1400px; color:white; }
+.CCFGanttSolid { background:url(BackgroundsGantt.gif?v110) left -1700px; }
+.CCFGanttFixed,.CCFGanttLeft,.CCFGanttBound,.CCFGanttBoundStart { border-left-style:solid!important; border-left-width:3px; padding-left:0px;}
+.CCFGanttFixed,.CCFGanttRight,.CCFGanttBound,.CCFGanttBoundStart { border-right-style:solid!important; border-right-width:3px; padding-right:0px; }
+.CCFGanttFixed,.CCFGanttLeft,.CCFGanttRight { background:url(BackgroundsGantt.gif?v110) left -1600px; }
+.CCFGanttBound,.CCFGanttEnd { background:url(BackgroundsGantt.gif?v110) left -1800px; }
+.CCFGanttBoundStart,.CCFGanttEndStart { background:url(BackgroundsGantt.gif?v110) left -1800px; }
+.CCFGanttEdge { display:none; }
+
+/* --- Run bar Error (overlaid) FastGantt --- */
+.CCFGanttError { background:url(BackgroundsGantt.gif?v110) left -1900px; opacity:0.7; filter:alpha(opacity=70); }
+.CCFGanttErrorIE { background:url(BackgroundsGantt.gif?v110) left -1900px; filter:alpha(opacity=70); } /* Used in Internet explorer 9 and below to avoid problems in IE9 */
+
+/* --- Run bar complete FastGantt --- */
+.CCFGantt0 {  background-position: 0px 0px; color:black;  }
+.CCFGantt0Err {  background-position: 0px -500px; color:black; }
+.CCFGantt0Crit {  background-position: 0px -600px; color:black; }
+.CCFGantt50 { background-position: 0px -100px; color:white; }
+.CCFGantt50Err { background-position: 0px -700px; color:black; }
+.CCFGantt50Crit { background-position: 0px -800px; color:black; }
+.CCFGantt100,.CCFGantt100Err,.CCFGantt100Crit { background-position: 0px -300px; color:black; }
+.CCFGanttCompleteGauge { margin-left:-2px; background:url(BackgroundsGantt.gif?v110) 0px -200px; height:250px; margin-bottom:-250px; overflow:hidden; }
+.CCFGanttCompleteText { padding-left:0px; overflow:hidden; width:100%; font:bold 11px Arial; line-height:10px; white-space:nowrap; }
+
+/* --- Bar group color --- */
+.CCGanttGroupIn { background-position: 0px -400px; color:yellow; }
+.CCGanttGroupIn0 { background-position: 0px -900px; color:black; }
+.CCGanttGroupIn0Err { background-position: 0px -1200px; color:black; }
+.CCGanttGroupIn0Crit { background-position: 0px -1300px; color:black; }
+.CCGanttGroupIn50 { background-position: 0px -1000px; color:black; }
+.CCGanttGroupIn50Err { background-position: 0px -1200px; color:black; }
+.CCGanttGroupIn50Crit { background-position: 0px -1300px; color:black; }
+.CCGanttGroupIn100,.CCGanttGroupIn100Err,.CCGanttGroupIn100Crit { background-position: 0px -400px; color:yellow; }
+.CCGanttGroupCompleteGauge { background-position:0px -1100px; }
+.CCGanttGroupCompleteText { color:yellow; } 
+
+/* --- Bar custom colors --- */
+.CCGanttRedOut { border-color:red; } .CCGanttRedIn { background:red; color:black; } .CCGanttRedIn0,.CCGanttRedIn50 { background:#F88; }
+.CCGanttRedIn0Crit,.CCGanttRedIn50Crit { background:#F88 url(BackgroundsGantt.gif?v110) 0px -2100px; }
+.CCGanttRedIn0Err,.CCGanttRedIn50Err { background:#F88 url(BackgroundsGantt.gif?v110) 0px -2200px; }
+.CCGanttRedCompleteGauge { background:red; }
+.CCGanttRedOutHover { border-color:#800!important; }
+
+.CCGanttBlueOut { border-color:blue; } .CCGanttBlueIn { background:blue; color:white; } .CCGanttBlueIn0,.CCGanttBlueIn50 { background:#88F; }
+.CCGanttBlueIn0Crit,.CCGanttBlueIn50Crit { background:#88F url(BackgroundsGantt.gif?v110) 0px -2100px; }
+.CCGanttBlueIn0Err,.CCGanttBlueIn50Err { background:#88F url(BackgroundsGantt.gif?v110) 0px -2200px; }
+.CCGanttBlueCompleteGauge { background:blue; } .CCGanttBlueCompleteText { color:white; }
+
+.CCGanttGreenOut { border-color:green; } .CCGanttGreenIn { background:green; color:white; } .CCGanttGreenIn0,.CCGanttGreenIn50 { background:#6D6; }
+.CCGanttGreenIn0Crit,.CCGanttGreenIn50Crit { background:#6D6 url(BackgroundsGantt.gif?v110) 0px -2100px; }
+.CCGanttGreenIn0Err,.CCGanttGreenIn50Err { background:#6D6 url(BackgroundsGantt.gif?v110) 0px -2200px; }
+.CCGanttGreenCompleteGauge { background:green; } .CCGanttGreenCompleteText { color:white; }
+
+.CCGanttFuchsiaOut { border-color:fuchsia; } .CCGanttFuchsiaIn { background:fuchsia; color:black; } .CCGanttFuchsiaIn0,.CCGanttFuchsiaIn50 { background:#F8F; }
+.CCGanttFuchsiaIn0Crit,.CCGanttFuchsiaIn50Crit { background:#F8F url(BackgroundsGantt.gif?v110) 0px -2100px; }
+.CCGanttFuchsiaIn0Err,.CCGanttFuchsiaIn50Err { background:#F8F url(BackgroundsGantt.gif?v110) 0px -2200px; }
+.CCGanttFuchsiaCompleteGauge { background:fuchsia; }
+
+.CCGanttAquaOut { border-color:aqua; } .CCGanttAquaIn { background:aqua; color:black; } .CCGanttAquaIn0,.CCGanttAquaIn50 { background:#AFF; }
+.CCGanttAquaIn0Crit,.CCGanttAquaIn50Crit { background:#AFF url(BackgroundsGantt.gif?v110) 0px -2100px; }
+.CCGanttAquaIn0Err,.CCGanttAquaIn50Err { background:#AFF url(BackgroundsGantt.gif?v110) 0px -2200px; }
+.CCGanttAquaCompleteGauge { background:aqua; }
+
+.CCGanttLimeOut { border-color:lime; } .CCGanttLimeIn { background:lime; color:black; } .CCGanttLimeIn0,.CCGanttLimeIn50 { background:#CFC; }
+.CCGanttLimeIn0Crit,.CCGanttLimeIn50Crit { background:#CFC url(BackgroundsGantt.gif?v110) 0px -2100px; }
+.CCGanttLimeIn0Err,.CCGanttLimeIn50Err { background:#CFC url(BackgroundsGantt.gif?v110) 0px -2200px; }
+.CCGanttLimeCompleteGauge { background:lime; }
+
+.CCGanttMaroonOut { border-color:maroon; } .CCGanttMaroonIn { background:maroon; color:white; } .CCGanttMaroonIn0,.CCGanttMaroonIn50 { background:#C88; }
+.CCGanttMaroonIn0Crit,.CCGanttMaroonIn50Crit { background:#C88 url(BackgroundsGantt.gif?v110) 0px -2100px; }
+.CCGanttMaroonIn0Err,.CCGanttMaroonIn50Err { background:#C88 url(BackgroundsGantt.gif?v110) 0px -2200px; }
+.CCGanttMaroonCompleteGauge { background:maroon; } .CCGanttMaroonCompleteText { color:white; }
+
+.CCGanttNavyOut { border-color:navy; } .CCGanttNavyIn { background:navy; color:white; } .CCGanttNavyIn0,.CCGanttNavyIn50 { background:#88C; }
+.CCGanttNavyIn0Crit,.CCGanttNavyIn50Crit { background:#88C url(BackgroundsGantt.gif?v110) 0px -2100px; }
+.CCGanttNavyIn0Err,.CCGanttNavyIn50Err { background:#88C url(BackgroundsGantt.gif?v110) 0px -2200px; }
+.CCGanttNavyCompleteGauge { background:navy; } .CCGanttNavyCompleteText { color:white; }
+
+.CCGanttOliveOut { border-color:olive; } .CCGanttOliveIn { background:olive; color:white; } .CCGanttOliveIn0,.CCGanttOliveIn50 { background:#CC8; }
+.CCGanttOliveIn0Crit,.CCGanttOliveIn50Crit { background:#CC8 url(BackgroundsGantt.gif?v110) 0px -2100px; }
+.CCGanttOliveIn0Err,.CCGanttOliveIn50Err { background:#CC8 url(BackgroundsGantt.gif?v110) 0px -2200px; }
+.CCGanttOliveCompleteGauge { background:olive; } .CCGanttOliveCompleteText { color:white; }
+
+.CCGanttOrangeOut { border-color:orange; } .CCGanttOrangeIn { background:orange; color:black; } .CCGanttOrangeIn0,.CCGanttOrangeIn50 { background:#FFCC88; }
+.CCGanttOrangeIn0Crit,.CCGanttOrangeIn50Crit { background:#FFCC88 url(BackgroundsGantt.gif?v110) 0px -2100px; }
+.CCGanttOrangeIn0Err,.CCGanttOrangeIn50Err { background:#FFCC88 url(BackgroundsGantt.gif?v110) 0px -2200px; }
+.CCGanttOrangeCompleteGauge { background:orange; } .CCGanttOrangeCompleteText { color:black; }
+
+.CCGanttPurpleOut { border-color:purple; } .CCGanttPurpleIn { background:purple; color:white; } .CCGanttPurpleIn0,.CCGanttPurpleIn50 { background:#C8C; }
+.CCGanttPurpleIn0Crit,.CCGanttPurpleIn50Crit { background:#C8C url(BackgroundsGantt.gif?v110) 0px -2100px; }
+.CCGanttPurpleIn0Err,.CCGanttPurpleIn50Err { background:#C8C url(BackgroundsGantt.gif?v110) 0px -2200px; }
+.CCGanttPurpleCompleteGauge { background:purple; } .CCGanttPurpleCompleteText { color:white; }
+
+.CCGanttSilverOut { border-color:silver; } .CCGanttSilverIn { background:silver; color:black; } .CCGanttSilverIn0,.CCGanttSilverIn50 { background:#E0E0E0; }
+.CCGanttSilverIn0Crit,.CCGanttSilverIn50Crit { background:#E0E0E0 url(BackgroundsGantt.gif?v110) 0px -2100px; }
+.CCGanttSilverIn0Err,.CCGanttSilverIn50Err { background:#E0E0E0 url(BackgroundsGantt.gif?v110) 0px -2200px; }
+.CCGanttSilverCompleteGauge { background:silver; }
+
+.CCGanttTealOut { border-color:teal; } .CCGanttTealIn { background:teal; color:white; } .CCGanttTealIn0,.CCGanttTealIn50 { background:#8CC; }
+.CCGanttTealIn0Crit,.CCGanttTealIn50Crit { background:#8CC url(BackgroundsGantt.gif?v110) 0px -2100px; }
+.CCGanttTealIn0Err,.CCGanttTealIn50Err { background:#8CC url(BackgroundsGantt.gif?v110) 0px -2200px; }
+.CCGanttTealCompleteGauge { background:teal; } .CCGanttTealCompleteText { color:white; }
+
+.CCGanttYellowOut { border-color:#AA0; } .CCGanttYellowIn { background:yellow; color:black; } .CCGanttYellowIn0,.CCGanttYellowIn50 { background:#FFA; }
+.CCGanttYellowIn0Crit,.CCGanttYellowIn50Crit { background:#FFA url(BackgroundsGantt.gif?v110) 0px -2100px; }
+.CCGanttYellowIn0Err,.CCGanttYellowIn50Err { background:#FFA url(BackgroundsGantt.gif?v110) 0px -2200px; }
+.CCGanttYellowCompleteGauge { background:yellow; }
+
+.CCGanttBlackOut { border-color:black; } .CCGanttBlackIn { background:black; color:white; } .CCGanttBlackIn0,.CCGanttBlackIn50 { background:#666; }
+.CCGanttBlackIn0Crit,.CCGanttBlackIn50Crit { background:#666 url(BackgroundsGantt.gif?v110) 0px -2100px; }
+.CCGanttBlackIn0Err,.CCGanttBlackIn50Err { background:#666 url(BackgroundsGantt.gif?v110) 0px -2200px; }
+.CCGanttBlackCompleteGauge { background:black; } .CCGanttBlackCompleteText { color:white; }
+
+.CCGanttGrayOut { border-color:gray; } .CCGanttGrayIn { background:#999; color:black; } .CCGanttGrayIn0,.CCGanttGrayIn50 { background:#BBB; }
+.CCGanttGrayIn0Crit,.CCGanttGrayIn50Crit { background:#BBB url(BackgroundsGantt.gif?v110) 0px -2100px; }
+.CCGanttGrayIn0Err,.CCGanttGrayIn50Err { background:#BBB url(BackgroundsGantt.gif?v110) 0px -2200px; }
+.CCGanttGrayCompleteGauge { background:#999; }
+
+.CCGanttWhiteOut { border-color:black; } .CCGanttWhiteIn { background:#EEE; color:black; } .CCGanttWhiteIn0,.CCGanttWhiteIn50 { background:white; }
+.CCGanttWhiteIn0Crit,.CCGanttWhiteIn50Crit { background:white url(BackgroundsGantt.gif?v110) 0px -2100px; }
+.CCGanttWhiteIn0Err,.CCGanttWhiteIn50Err { background:white url(BackgroundsGantt.gif?v110) 0px -2200px; }
+.CCGanttWhiteCompleteGauge { background:#E0E0E0; border-right:2px solid black; }
+
+/* --- Special classes --- */
+.CCGanttNoneOut { margin:0px!important; border-color:transparent; border-width:2px!important; border-left:0px none!important; border-right:0px none!important; padding:0px!important; }
+.CCGanttNoneIn { height: auto; padding:0px!important; background:none; color:inherit; }
+.CCGanttHtmlOut { }
+.CCGanttHtmlIn { height: auto; padding:0px!important; background:none; color:inherit; }
+.CCGanttVoidOut { border-color:transparent; }
+.CCGanttVoidIn { height: auto; padding:0px!important; background:none; color:inherit; }
+
+/* --- Main bar special classes --- */
+.CCGanttOuterIcons,.CCGanttInnerIcons { padding-left:4px; }  /* Main bar with side icons, inner class only, useful to set different left padding */
+
+/* --- Run bar special classes --- */
+.CCGanttJoinLeft { border-left-style:dotted; border-left-color:#888; }
+.CCGanttJoinRight { border-right-style:dotted; border-right-color:#888; }
+.CCGanttJoinLeftNbsp { border-left-style:dotted; border-left-color:red; }
+.CCGanttJoinRightNbsp { border-right-style:dotted; border-right-color:red; }
+.CCGanttUnknownOut { }
+.CCGanttUnknownIn { background:black; color:white; }
+.CCGanttMoveOut { border:2px solid #DDD; margin:0px; padding:0px; }
+.CCGanttMoveIn { background:#F0F0F0; color:black; }
+.CCGanttRemoveOut { border:2px solid #DDD; margin:0px; padding:0px; }
+.CCGanttRemoveIn { background:red; color:black; }
+.CCGanttCopyOut { border:2px solid blue; margin:0px; padding:0px; }
+.CCGanttCopyIn { }
+.CCGanttSelectedIn { }
+.CCGanttSelectedOut { border-style:dashed; border-color:blue!important; border-width:2px; margin-top:0px; margin-left:0px; padding-left:1px!important; padding-right:1px!important; }
+
+/* --- Run bar special classes FastGantt --- */
+.CCFGanttNone { border-color:transparent; background:none; color:inherit; }
+.CCFGanttHtml { background:none; color:inherit; }
+.CCFGanttVoid { border-color:transparent; background:none; color:inherit; }
+.CCFGanttJoinLeft { border-left-style:dotted; border-left-color:#888; }
+.CCFGanttJoinRight { border-right-style:dotted; border-right-color:#888; }
+.CCFGanttJoinLeftNbsp { border-left-style:dotted; border-left-color:red; }
+.CCFGanttJoinRightNbsp { border-right-style:dotted; border-right-color:red; }
+.CCFGanttUnknown { background:black; color:white; }
+.CCFGanttMove { border:2px solid #DDD; padding:0px; padding-left:1px; padding-right:1px; background:#F0F0F0; color:black; }
+.CCFGanttRemove { border:2px solid #DDD; padding:0px; padding-left:1px; padding-right:1px; background:red; color:black; }
+.CCFGanttCopy { border:2px solid blue; padding:0px; padding-left:1px; padding-right:1px; }
+.CCFGanttSelected { border-style:dashed; border-color:blue!important; border-width:2px; padding:1px; padding-top:0px; padding-bottom:0px; }
+
+/* --- Flow backward compatibility --- */
+.CCGanttFlowOut,.CCGanttGFlowOut { margin-top:5px!important; margin-left:0px!important; border:1px solid black; border-width:1px!important; overflow:hidden; padding:0px!important; }
+.CCGanttFlowIn,.CCGanttGFlowIn { height:3px; overflow:hidden; background:yellow; }
+.CCGanttGFlowIn { background:white; }
+.CCGanttFlow0InErr,.CCGanttGFlow0InErr { background:#F55; }
+.CCGanttFlow0InCrit,.CCGanttGFlow0InCrit { background:#FA0; }
+
+/* --- Main bar locked, all colors (for Run bar is used Fixed box instead) --- */
+.CCGanttLockedOut { 
+   border-left-style:solid!important; border-left-width:3px!important; border-right-style:solid!important; border-right-width:3px!important; 
+   margin-left:0px!important; padding-left:1px!important;
+   }
+.CCGanttLockedIn { }
+
+/* --- Bar disabled,  all colors, used instead of Complete classes --- */
+.CCGanttOutDisabled { }
+.CCGanttInDisabled { background:url(BackgroundsGantt.gif?v110) left -2300px; }
+.CCFGanttDisabled { background:url(BackgroundsGantt.gif?v110) left -2300px; } /* FastGantt version */
+
+/* --- GanttAdjacentBars, outer class --- */
+.CCGanttAdjacent { margin-left:0px; margin-right:0px; }
+
+/* --- Bar hover --- */
+.CCGanttMainOutHover,.CCGanttBoxOutHover,.CCGanttSolidOutHover,.CCGanttLeftOutHover,.CCGanttRightOutHover,.CCGanttFixedOutHover,
+.CCGanttBoundOutHover,.CCGanttBoundStartOutHover,.CCGanttEndOutHover,.CCGanttEndStartOutHover,.CCGanttNbspOutHover,.CCGanttEmptyOutHover {
+   border:2px solid red; margin-top:0px; margin-left:0px; margin-right:0px; padding:1px; overflow:hidden;
+   }
+.CCGanttHoverGroup,.CCGanttAdjacentHoverGroup { border:2px solid #fa4; margin-top:0px; margin-left:0px; margin-right:0px; padding:1px; overflow:hidden; }
+.CCGanttAdjacentHover,.CCGanttAdjacentHoverGroup { padding-left:0px; padding-right:0px; }
+.CCGanttContainerHover { border:1px solid red; }
+
+/* --- Bar hover FastGantt --- */
+.CCFGanttMainHover,.CCFGanttBoxHover,.CCFGanttSolidHover,.CCFGanttLeftHover,.CCFGanttRightHover,.CCFGanttFixedHover,
+.CCFGanttBoundHover,.CCFGanttBoundStartHover,.CCFGanttEndHover,.CCFGanttEndStartHover,.CCFGanttNbspHover,.CCFGanttEmptyHover {
+   border:2px solid red; padding:0px; padding-left:1px; padding-right:1px; overflow:hidden; 
+   }
+.CCFGanttHoverGroup { border:2px solid #fa4; padding:0px; padding-left:1px; padding-right:1px; overflow:hidden; }
+
+/* --- Set for FastGantt when browser has zoom!=100% to ensure all boxes have the same border height --- */
+.CCFGanttZoom { border-top-width:1px!important; border-bottom-width:1px!important; padding-top:1px!important; padding-bottom:1px!important; } 
+
+
+
+
+/* -------------------------------------------------------------------------------------------------------------------------- */
+/*                                                Gantt bar supplement tags                                                */
+/* -------------------------------------------------------------------------------------------------------------------------- */
+
+/* 
+There are tags that can be rendered with Gantt bar, but they are outside the bar.
+The supplement tags are moved or resized with the bar.
+
+1) Main bar side icons are printed by GanttIcons setting. 
+The icon is one div tag with background image set by one CSS class only
+   ..OutLeft,       ..OutRight        Outer left/right icon
+   ..InLeft,        ..InRight         Inner left/right icon
+   ..OutTopLeft,    ..OutTopRight     Outer left/right icon. Used when the main bar has set GanttTop or run bar Top or GanttRunTop attribute. But does NOT have set GanttHeight/Height/GanttRunHeight.
+   ..InTopLeft,     ..InTopRight      Inner left/right icon. Used when the main bar has set GanttTop or run bar Top or GanttRunTop attribute. But does NOT have set GanttHeight/Height/GanttRunHeight.
+   ..OutHeightLeft, ..OutHeightRight  Outer left/right icon. Used when the main bar has set GanttHeight or run bar Height or GanttRunHeight attribute.
+   ..InHeightLeft,  ..InHeightRight   Inner left/right icon. Used when the main bar has set GanttHeight or run bar Height or GanttRunHeight attribute.
+   ..OutCustomLeft, ..OutCustomRight  Outer left/right icon. Used for custom icons set by GanttIconLeft / GanttIconRight
+   ..InCustomLeft,  ..InCustomRight   Inner left/right icon. Used for custom icons set by GanttIconLeft / GanttIconRight
+   ..IconLeftShift, ..IconRightShift  Shift to the left of every icon. @Set only width in px.
+
+2) Bar side text, set by GanttHtmlLeft and GanttHtmlRight for main bar and TextLeft and TextRight for run bar
+The side text consists from two div tags as <div SIZE><div TEXT>TEXT</div></div>
+
+a) div SIZE tag controls only the text position and width and has not set any CSS class
+b) the TEXT contains the textor HTML. Uses up to 2 classes, normal and disabled
+
+   ..HtmlLeft0,          ..HtmlRight0          Left / right side text for bar with GanttHtml...Edge = 2
+   ..HtmlLeft1,          ..HtmlRight1          Left / right side text for bar with GanttHtml...Edge = 0 or 1
+   ..HtmlLeftMilestone,  ..HtmlRightMilestone  Left / right side text for milestone
+   ..HtmlCenter                                Left / right side text for bar with GanttHtml...Edge = 3 or 4
+   ..HtmlDisabled                              Class added for disabled bar or milestone
+   ..HtmlXXX                                   17 Custom color classes
+
+
+3) Bar manual constraint icon, set for GanttManual or GanttRunManual or run Manual
+The icon is one div tag with background image set by one CSS class only
+   ..ManualStart                              Manual start icon, used for GanttManualDirection=0
+   ..ManualEnd                                Manual end icon, used for GanttManualDirection=1
+
+*/
+
+/* --- Main bar side icons --- */
+.CCGanttIconLeftShift,.CCGanttIconRightShift,.CCGanttIconInLeftShift,.CCGanttIconInRightShift { margin-left:-10px; }
+.CCGanttIconLeftShift,.CCGanttIconRightShift { margin-top:-2px; }
+.CCGanttOutLeft,.CCGanttOutRight,.CCGanttInLeft,.CCGanttInRight,
+.CCGanttOutHeightLeft,.CCGanttOutHeightRight,.CCGanttInHeightLeft,.CCGanttInHeightRight { 
+   background:url(Gantt.gif?v110) no-repeat; width:20px; overflow:hidden;
+   }
+.CCGanttOutLeft { background-position: -292px top; }
+.CCGanttOutRight { background-position: -340px top; }
+.CCGanttInLeft { background-position: -90px 0px; }
+.CCGanttInRight { background-position: -145px 0px; }
+.CCGanttOutHeightLeft { background-position: -292px top; }
+.CCGanttOutHeightRight { background-position: -340px top; }
+.CCGanttInHeightLeft { background-position: -190px 0px; background-repeat:repeat-y; }
+.CCGanttInHeightRight { background-position: -245px 0px; background-repeat:repeat-y; }
+.CCGanttOutCustomLeft,.CCGanttOutCustomRight,.CCGanttInCustomLeft,.CCGanttInCustomRight { overflow:hidden; background-repeat:no-repeat; background-position:left top; }
+
+/* --- Bar HtmlLeft / HtmlRight --- */
+.CCGanttHtmlLeft0,.CCGanttHtmlRight0 { font:bold 12px "Times New Roman"; line-height:12px; white-space:nowrap; padding-top:2px; }
+.CCGanttHtmlLeft1,.CCGanttHtmlRight1 { padding-top:2px; font:bold 11px Arial; line-height:11px; white-space:nowrap; }
+.CCGanttHtmlLeftMilestone,.CCGanttHtmlRightMilestone { font:bold 12px "Times New Roman"; line-height:12px; white-space:nowrap; padding-top:2px; }
+.CCGanttHtmlRight0 { padding-left:7px; }
+.CCGanttHtmlRight1 { padding-left:3px; }
+.CCGanttHtmlRightMilestone { padding-left:12px; }
+.CCGanttHtmlLeft0 { width:2000px; text-align:right; padding-right:7px; }
+.CCGanttHtmlLeft1 { width:2000px; text-align:right; padding-right:3px; }
+.CCGanttHtmlLeftMilestone { width:2000px; text-align:right; padding-right:2px; }
+.CCGanttHtmlCenter { padding-top:2px; font:bold 11px Arial; line-height:11px; white-space:nowrap; }
+.CCGanttHtmlDisabled { color:gray; }
+
+/* --- Bar HtmlLeft / HtmlRight color classes --- */
+.CCGanttHtmlAqua { color:aqua; }
+.CCGanttHtmlBlack { color:black; }
+.CCGanttHtmlBlue { color:blue; }
+.CCGanttHtmlFuchsia { color:fuchsia; }
+.CCGanttHtmlGray { color:gray; }
+.CCGanttHtmlGreen { color:green; }
+.CCGanttHtmlLime { color:lime; }
+.CCGanttHtmlMaroon { color:maroon; }
+.CCGanttHtmlNavy { color:navy; }
+.CCGanttHtmlOlive { color:olive; }
+.CCGanttHtmlOrange { color:orange; }
+.CCGanttHtmlPurple { color:purple; }
+.CCGanttHtmlRed { color:red; }
+.CCGanttHtmlSilver { color:silver; }
+.CCGanttHtmlTeal { color:teal; }
+.CCGanttHtmlWhite { color:white; }
+.CCGanttHtmlYellow { color:yellow; }
+
+.CCGanttHtmlNone { padding:0px; }
+
+/* --- Bar Manual start / end --- */
+.CCGanttManualStart,.CCGanttManualEnd { background:url(Gantt.gif?v110) no-repeat; width:8px; height:8px; overflow:hidden; }
+.CCGanttManualStart { background-position:-1900px 0px; }
+.CCGanttManualEnd { background-position:-1950px 0px; }
+
+
+
+
+/* -------------------------------------------------------------------------------------------------------------------------- */
+/*                                                        Milestone                                                        */
+/* -------------------------------------------------------------------------------------------------------------------------- */
+
+/* Milestone is used for Main bar Milestone and for Run bar Milestone and Stop types
+
+Milestone is one DIV tag with background image.
+It has set up to four CSS classes to specify the background image according to milestone type and state.
+The classes are defined in below order, the latter class overrides all the previous classes
+
+1) One base class:
+   ..Milestone or ..SelMilestone                      for Main bar milestone, the second class is for selected milestone
+   ..RunMilestone or ..RunSelMilestone                for Run bar Milestone type, the second class is for selected milestone
+   ..StopMilestone or ..StopSelMilestone              for Run bar Stop type, the second class is for selected milestone
+
+2) One complete class, set only if the Complete >=0 OR the milestone is critical, error or disabled
+   ..Milestone0 or ..SelMilestone0                    for incomplete milestone 
+   ..Milestone100 or ..SelMilestone100                for complete milestone
+   ..Milestone0Crit or ..SelMilestone0Crit            for incomplete milestone on critical path. Used also when Complete is null.
+   ..Milestone100Crit or ..SelMilestone100Crit        for complete milestone on critical path
+   ..Milestone0Err or ..SelMilestone0Err              for incomplete milestone beyond critical path. Used also when Complete is null.
+   ..Milestone100Err or ..SelMilestone100Err          for complete milestone beyond critical path
+   ..MilestoneDisabled or ..SelMilestoneDisabled      for disabled milestone
+
+3) One custom class, set only if GanttClass or Run Class is set
+   ..XXXMilestone or ..XXXSelMilestone                where XXX is the custom class name, predefined are one Group class and 17 color classes (only 10 color classes differ)
+
+4) One custom complete class, set only if GanttClass or Run Class is set and only if the Complete >=0 OR the milestone is critical, error or disabled
+   ..XXXMilestone0 or ..XXXSelMilestone0              for incomplete milestone 
+   ..XXXMilestone100 or ..XXXSelMilestone100          for complete milestone
+   ..XXXMilestone0Crit or ..XXXSelMilestone0Crit      for incomplete milestone on critical path. Used also when Complete is null.
+   ..XXXMilestone100Crit or ..XXXSelMilestone100Crit  for complete milestone on critical path
+   ..XXXMilestone0Err or ..XXXSelMilestone0Err        for incomplete milestone beyond critical path. Used also when Complete is null.
+   ..XXXMilestone100Err or ..XXXSelMilestone100Err    for complete milestone beyond critical path
+   ..XXXMilestoneDisabled or ..XXXSelMilestoneDisabled  for disabled milestone
+
+5) Hover classes, added if milestone is hovered (under mouse cursor)
+   It adds all the classes already set with the Hover suffix.
+   For example, if the milestone has CSS: "GMGanttMilestone GMGanttMilestone0Crit" the hovered CSS will be: "GMGanttMilestone GMGanttMilestone0Crit GMGanttMilestoneHover GMGanttMilestone0CritHover"
+
+*/
+
+/* --- Milestone padding calculations, how much the milestone icon can be overflowed from all sides --- */
+.CCGanttMilestonePadding { height:2px; }
+
+/* --- Milestone base and size definition --- */
+.CCGanttMilestoneBase { background:url(Gantt.gif?v110) no-repeat; width:17px; height:17px; overflow:hidden; }
+
+/* --- Milestone for Main bar --- */
+.CCGanttMilestone { background-position: -900px 0px; }
+.CCGanttSelMilestone { background-position: -925px 0px; }
+.CCGanttMilestoneHover { background-position: -950px 0px; }
+.CCGanttSelMilestoneHover { background-position: -975px 0px; }
+
+/* --- Milestone for Run bar --- */
+.CCGanttRunMilestone { background-position: -1100px 0px; }
+.CCGanttRunSelMilestone { background-position: -1125px 0px; }
+.CCGanttRunMilestoneHover { background-position: -1150px 0px; }
+.CCGanttRunSelMilestoneHover { background-position: -1175px 0px; }
+
+/* --- Error (overlaid) milestone for Run bar, used instead of Complete --- */
+.CCGanttMilestoneError { background-position: -1000px 0px; }
+.CCGanttSelMilestoneError { background-position: -1025px 0px; }
+.CCGanttMilestoneErrorHover { background-position: -1050px 0px; }
+.CCGanttSelMilestoneErrorHover { background-position: -1075px 0px; }
+
+/* --- Milestone Complete --- */
+.CCGanttMilestone0 { background-position: -1100px 0px; }
+.CCGanttSelMilestone0 { background-position: -1125px 0px; }
+.CCGanttMilestone0Hover { background-position: -1150px 0px; }
+.CCGanttSelMilestone0Hover { background-position: -1175px 0px; }
+.CCGanttMilestone100,.CCGanttMilestone100Crit,.CCGanttMilestone100Err { background-position: -1800px 0px; }
+.CCGanttSelMilestone100,.CCGanttSelMilestone100Crit,.CCGanttSelMilestone100Err { background-position: -1825px 0px; }
+.CCGanttMilestone100Hover,.CCGanttMilestone100CritHover,.CCGanttMilestone100CritHover { background-position: -1850px 0px; }
+.CCGanttSelMilestone100Hover,.CCGanttSelMilestone100CritHover,.CCGanttSelMilestone100CritHover { background-position: -1875px 0px; }
+.CCGanttMilestone0Crit { background-position:-1700px 0px; }
+.CCGanttSelMilestone0Crit { background-position:-1725px 0px; }
+.CCGanttMilestone0CritHover { background-position: -1750px 0px; }
+.CCGanttSelMilestone0CritHover { background-position: -1775px 0px; }
+.CCGanttMilestone0Err { background-position:-1000px 0px; }
+.CCGanttSelMilestone0Err { background-position:-1025px 0px; }
+.CCGanttMilestone0ErrHover { background-position: -1050px 0px; }
+.CCGanttSelMilestone0ErrHover { background-position: -1075px 0px; }
+
+/* --- Stop milestone for Run bar --- */
+.CCGanttStopMilestone { background-position: -900px 0px; }
+.CCGanttStopSelMilestone { background-position: -925px 0px; }
+.CCGanttStopMilestoneHover { background-position: -950px 0px; }
+.CCGanttStopSelMilestoneHover { background-position: -975px 0px; }
+
+/* --- Milestone - Group color --- */
+.CCGanttGroupMilestone { background-position: -900px 0px; }
+.CCGanttGroupSelMilestone { background-position: -925px 0px; }
+.CCGanttGroupMilestoneHover { background-position: -950px 0px; }
+.CCGanttGroupSelMilestoneHover { background-position: -975px 0px; }
+.CCGanttGroupMilestone0 { background-position: -1600px 0px; }
+.CCGanttGroupSelMilestone0 { background-position: -1625px 0px; }
+.CCGanttGroupMilestone0Hover { background-position: -1650px 0px; }
+.CCGanttGroupSelMilestone0Hover { background-position: -1675px 0px; }
+.CCGanttGroupMilestone0Crit { background-position:-1400px 0px; }
+.CCGanttGroupSelMilestone0Crit { background-position:-1425px 0px; }
+.CCGanttGroupMilestone0CritHover { background-position: -1450px 0px; }
+.CCGanttGroupSelMilestone0CritHover { background-position: -1475px 0px; }
+.CCGanttGroupMilestone0Err { background-position:-1300px 0px; }
+.CCGanttGroupSelMilestone0Err { background-position:-1325px 0px; }
+.CCGanttGroupMilestone0ErrHover { background-position: -1350px 0px; }
+.CCGanttGroupSelMilestone0ErrHover { background-position: -1375px 0px; }
+
+/* --- Milestone - custom colors --- */
+.CCGanttRedMilestone { background-position: -1000px 0px; } .CCGanttRedMilestoneHover { background-position: -1050px 0px; }
+.CCGanttRedSelMilestone { background-position: -1025px 0px; } .CCGanttRedSelMilestoneHover { background-position: -1075px 0px; }
+.CCGanttMaroonMilestone { background-position: -1000px 0px; } .CCGanttMaroonMilestoneHover { background-position: -1050px 0px; }
+.CCGanttMaroonSelMilestone { background-position: -1025px 0px; } .CCGanttMaroonSelMilestoneHover { background-position: -1075px 0px; }
+.CCGanttBlueMilestone { background-position: -1100px 0px; } .CCGanttBlueMilestoneHover { background-position: -1150px 0px; }
+.CCGanttBlueSelMilestone { background-position: -1125px 0px; } .CCGanttBlueSelMilestoneHover { background-position: -1175px 0px; }
+.CCGanttNavyMilestone { background-position: -1100px 0px; } .CCGanttNavyMilestoneHover { background-position: -1150px 0px; }
+.CCGanttNavySelMilestone { background-position: -1125px 0px; } .CCGanttNavySelMilestoneHover { background-position: -1175px 0px; }
+.CCGanttGreenMilestone { background-position: -1200px 0px; } .CCGanttGreenMilestoneHover { background-position: -1250px 0px; }
+.CCGanttGreenSelMilestone { background-position: -1225px 0px; } .CCGanttGreenSelMilestoneHover { background-position: -1275px 0px; }
+.CCGanttBlackMilestone { background-position: -900px 0px; } .CCGanttBlackMilestoneHover { background-position: -950px 0px; }
+.CCGanttBlackSelMilestone { background-position: -925px 0px; } .CCGanttBlackSelMilestoneHover { background-position: -975px 0px; }
+.CCGanttGrayMilestone { background-position: -900px 0px; } .CCGanttGrayMilestoneHover { background-position: -950px 0px; }
+.CCGanttGraySelMilestone { background-position: -925px 0px; } .CCGanttGraySelMilestoneHover { background-position: -975px 0px; }
+.CCGanttFuchsiaMilestone { background-position: -1300px 0px; } .CCGanttFuchsiaMilestoneHover { background-position: -1350px 0px; }
+.CCGanttFuchsiaSelMilestone { background-position: -1325px 0px; } .CCGanttFuchsiaSelMilestoneHover { background-position: -1375px 0px; }
+.CCGanttPurpleMilestone { background-position: -1300px 0px; } .CCGanttPurpleMilestoneHover { background-position: -1350px 0px; }
+.CCGanttPurpleSelMilestone { background-position: -1325px 0px; } .CCGanttPurpleSelMilestoneHover { background-position: -1375px 0px; }
+.CCGanttYellowMilestone { background-position: -1400px 0px; } .CCGanttYellowMilestoneHover { background-position: -1450px 0px; }
+.CCGanttYellowSelMilestone { background-position: -1425px 0px; } .CCGanttYellowSelMilestoneHover { background-position: -1475px 0px; }
+.CCGanttOliveMilestone { background-position: -1400px 0px; } .CCGanttOliveMilestoneHover { background-position: -1450px 0px; }
+.CCGanttOliveSelMilestone { background-position: -1425px 0px; } .CCGanttOliveSelMilestoneHover { background-position: -1475px 0px; }
+.CCGanttAquaMilestone { background-position: -1500px 0px; } .CCGanttAquaMilestoneHover { background-position: -1550px 0px; }
+.CCGanttAquaSelMilestone { background-position: -1525px 0px; } .CCGanttAquaSelMilestoneHover { background-position: -1575px 0px; }
+.CCGanttTealMilestone { background-position: -1500px 0px; } .CCGanttTealMilestoneHover { background-position: -1550px 0px; }
+.CCGanttTealSelMilestone { background-position: -1525px 0px; } .CCGanttTealSelMilestoneHover { background-position: -1575px 0px; }
+.CCGanttSilverMilestone { background-position: -1600px 0px; } .CCGanttSilverMilestoneHover { background-position: -1650px 0px; }
+.CCGanttSilverSelMilestone { background-position: -1625px 0px; } .CCGanttSilverSelMilestoneHover { background-position: -1675px 0px; }
+.CCGanttWhiteMilestone { background-position: -1600px 0px; } .CCGanttWhiteMilestoneHover { background-position: -1650px 0px; }
+.CCGanttWhiteSelMilestone { background-position: -1625px 0px; } .CCGanttWhiteSelMilestoneHover { background-position: -1675px 0px; }
+.CCGanttOrangeMilestone { background-position: -1700px 0px; } .CCGanttOrangeMilestoneHover { background-position: -1750px 0px; }
+.CCGanttOrangeSelMilestone { background-position: -1725px 0px; } .CCGanttOrangeSelMilestoneHover { background-position: -1775px 0px; }
+.CCGanttLimeMilestone { background-position: -1800px 0px; } .CCGanttLimeMilestoneHover { background-position: -1850px 0px; }
+.CCGanttLimeSelMilestone { background-position: -1825px 0px; } .CCGanttLimeSelMilestoneHover { background-position: -1875px 0px; }
+
+/* --- Disabled milestone, used instead of Complete --- */
+.CCGanttMilestoneDisabled { background-position:-1600px 0px; }
+.CCGanttSelMilestoneDisabled { background-position:-1625px 0px; }
+.CCGanttMilestoneDisabledHover { background-position: -1650px 0px; }
+.CCGanttSelMilestoneDisabledHover { background-position: -1675px 0px; }
+
+
+
+
+/* -------------------------------------------------------------------------------------------------------------------------- */
+/*                                                          Flag                                                           */
+/* -------------------------------------------------------------------------------------------------------------------------- */
+
+.CCGanttFlag { background:url(Gantt.gif?v110) no-repeat 0px 0px; width:16px; height:15px; overflow:hidden; }
+.CCGanttFlagHover { background-position:-50px 0px; }
+.CCGanttFlagCustom { background-repeat:no-repeat; width:16px; height:15px; overflow:hidden; }
+.CCGanttFlagCustomHover { background-color:red; }
+.CCGanttFlagText,.CCGanttFlagTextNoIcon,.CCGanttFlagTextRtl {  
+   overflow:hidden; margin:1px; padding:2px; border:1px solid; 
+   font-size:10px; line-height:10px; font-family:"Microsoft Sans Serif",Verdana,Arial; white-space:pre; background:yellow; overflow:hidden; 
+   }
+.CCGanttFlagText { margin-left:17px; }
+.CCGanttFlagTextRtl { margin-right:17px; }
+.CCGanttFlagTextHover, .CCGanttFlagTextNoIconHover { border:1px solid red!important; }
+.CCGanttFlagMenu { padding-right:16px; padding-bottom:256px; font:15px Arial; background-repeat:no-repeat; }
+
+
+
+
+/* -------------------------------------------------------------------------------------------------------------------------- */
+/*                                                          Point                                                          */
+/* -------------------------------------------------------------------------------------------------------------------------- */
+
+.CCGanttPoint { background:url(Gantt.gif?v110) no-repeat; width:17px; height:17px; overflow:hidden; }
+.CCGanttPointCustom { background-position:0px 0px!important; background-repeat:no-repeat; width:17px; height:17px; overflow:hidden; }  
+.CCGanttPointCustomHover { background-color:red; }
+.CCGanttPoint1 { background-position:-900px 0px; }
+.CCGanttPoint1Hover { background-position: -950px 0px; }
+.CCGanttPoint2 { background-position:-1000px 0px; }
+.CCGanttPoint2Hover { background-position:-1050px 0px; }
+.CCGanttPoint3 { background-position:-1100px 0px; }
+.CCGanttPoint3Hover { background-position:-1150px 0px; }
+.CCGanttPoint4 { background-position:-1200px 0px; }
+.CCGanttPoint4Hover { background-position:-1250px 0px; }
+.CCGanttPoint5 { background-position:-1300px 0px; }
+.CCGanttPoint5Hover { background-position:-1350px 0px; }
+.CCGanttPoint6 { background-position:-1400px 0px; }
+.CCGanttPoint6Hover { background-position:-1450px 0px; }
+.CCGanttPoint7 { background-position:-1500px 0px; }
+.CCGanttPoint7Hover { background-position:-1550px 0px; }
+.CCGanttPoint8 { background-position:-1600px 0px; }
+.CCGanttPoint8Hover { background-position:-1650px 0px; }
+
+
+
+
+/* -------------------------------------------------------------------------------------------------------------------------- */
+/*                                                          Mark                                                          */
+/* -------------------------------------------------------------------------------------------------------------------------- */
+
+.CCGanttMark,.CCGanttMark1,.CCGanttMark2,.CCGanttMark3,.CCGanttMark4,.CCGanttMark5,.CCGanttMark15 { height:5000px; overflow:hidden; background:#880; }
+.CCGanttMarkImg { height:5000px; overflow:hidden; }
+.CCGanttMark1 { background:red; }
+.CCGanttMark2 { background:green; }
+.CCGanttMark3 { background:yellow; }
+.CCGanttMark4 { background:black; }
+.CCGanttMark5 { background:silver; }
+.CCGanttMark6 { background:#F8F; margin-top:14px!important; height:2px!important; margin-bottom:-16px!important; }
+.CCGanttMark7 { background:#0F0; margin-top:14px!important; height:2px!important; margin-bottom:-16px!important; }
+.CCGanttMark8 { background:silver; margin-top:14px!important; height:2px!important; margin-bottom:-16px!important; }
+.CCGanttMark9 { background:#F8F; margin-top:2px!important; height:2px!important; margin-bottom:-4px!important; }
+.CCGanttMark10 { background:#0F0; margin-top:2px!important; height:2px!important; margin-bottom:-4px!important; }
+.CCGanttMark11 { background:silver; margin-top:2px!important; height:2px!important; margin-bottom:-4px!important; }
+.CCGanttMark12 { background:#F8F; margin-top:8px!important; height:1px!important; margin-bottom:-9px!important; }
+.CCGanttMark13 { background:#0F0; margin-top:8px!important; height:1px!important; margin-bottom:-9px!important; }
+.CCGanttMark14 { background:silver; margin-top:8px!important; height:1px!important; margin-bottom:-9px!important; }
+.CCGanttMark15 { background:#FF00FF; }
+.CCGanttMarkA,.CCGanttMarkB,.CCGanttMarkC,.CCGanttMarkD,.CCGanttMarkE,.CCGanttMarkF { stroke-width:1px; stroke:#FF00FF; fill:none; }
+.CCGanttMarkE,.CCGanttMarkF { height:1px; }
+.CCGanttMarkAIE { background:url(GanttLineA.gif); }
+.CCGanttMarkBIE { background:url(GanttLineB.gif); }
+.CCGanttMarkCIE { background:url(GanttLineC.gif); }
+.CCGanttMarkDIE { background:url(GanttLineD.gif); }
+
+
+
+
+/* -------------------------------------------------------------------------------------------------------------------------- */
+/*                                             Availability / Resource chart                                               */
+/* -------------------------------------------------------------------------------------------------------------------------- */
+
+.CCGanttAvailability { height:5000px; background:#ACF; border:1px solid #88F; border-bottom:0px none; }
+.CCGanttAvailabilityNeg { height:5000px; background:#FCA; border:1px solid #F88; border-top:0px none; }
+.CCGanttAvailabilityText,.CCGanttAvailabilityTextNeg { color:blue; background:none!important; text-align:center; font:bold 12px Arial; overflow:visible!important; white-space:nowrap; }
+.CCGanttAvailabilityTextNeg { color:red; }
+.CCGanttAvailabilityTextLeft { text-align:left; padding-left:2px; }
+.CCGanttAvailabilityTextRight { text-align:right; padding-right:2px; }
+.CCGanttAvailabilityAxis { background:#CCC; }
+.CCGanttAvailabilityTransparent { opacity:0.7; filter:alpha(opacity=70); }
+.CCGanttAvailabilityTransparentText { opacity:0.99; filter:alpha(opacity=99); }
+.CCGanttAvailabilityRed { color:red; background:#F88; border-color:red; }
+.CCGanttAvailabilityMaroon { color:maroon; background:#B77; border-color:maroon; }
+.CCGanttAvailabilityOrange { color:orange; background:#FD8; border-color:orange; }
+.CCGanttAvailabilityYellow { color:#CC0; background:#FF6; border-color:#CC0; }
+.CCGanttAvailabilityOlive { color:olive; background:#CC8; border-color:olive; }
+.CCGanttAvailabilityLime { color:#0D0; background:#8F8; border-color:#0D0; }
+.CCGanttAvailabilityGreen { color:green; background:#6C6; border-color:green; }
+.CCGanttAvailabilityAqua { color:#8DD; background:#8FF; border-color:#8DD; }
+.CCGanttAvailabilityTeal { color:teal; background:#6CC; border-color:teal; }
+.CCGanttAvailabilityBlue { color:blue; background:#99F; border-color:blue; }
+.CCGanttAvailabilityNavy { color:navy; background:#66C; border-color:navy; }
+.CCGanttAvailabilityFuchsia { color:fuchsia; background:#F8F; border-color:fuchsia; }
+.CCGanttAvailabilityPurple { color:purple; background:#C6C; border-color:purple; }
+.CCGanttAvailabilityBlack { color:#AAA; background:black; border-color:#AAA; }
+.CCGanttAvailabilityGray { color:gray; background:#AAA; border-color:gray; }
+.CCGanttAvailabilitySilver { color:silver; background:#DDD; border-color:silver; }
+.CCGanttAvailabilityWhite { color:#CCC; background:#F8F8F8; border-color:#CCC; }
+.CCGanttAvailabilityNB { border-top:0px none; border-bottom:0px none; }
+
+
+
+
+/* -------------------------------------------------------------------------------------------------------------------------- */
+/*                                                       Dependencies                                                      */
+/* -------------------------------------------------------------------------------------------------------------------------- */
+
+/* ------------------------------------------  Dependency lines 0 - 9 ------------------------------------------------------ */
+
+.CCGanttDep00 { border:2px solid; width:1px; height:1px; overflow:hidden; }  /* Dependency line, can define border width and style (all border edges must have the same width), width and height (the width and height must be the same)  */
+.CCGanttDep00Lag { margin-top:2px; border-top:1px dotted; height:2px; overflow:hidden; } /* Horizontal lag, can define height, vertical border size and vertical margin */
+.CCGanttDep00IE { width:5px; height:5px; } /* Defines width and height for IE5 quirks mode, must be GanttDep00 width+border_widths, height+border_heights  */
+.CCGanttDep00LagIE { height:3px; } /* Defines height for IE5 quirks mode, must be GanttDep00Lag height+border_heights  */
+.CCGanttDep00Space { margin-top:1px; } /* Vertical space between bar and horizontal dependency line below the bar */
+
+.CCGanttDep0Color { background:#00F; border-color:#DDF; border-right-color:#BBF; border-bottom-color:#BBF; } /* dependency line color, can define background and border color */
+.CCGanttDep0LagColor { border-top-color:#00F; } /* Horizontal lag color, can define background and border color */
+.CCGanttDep1Color { background:#080; border-color:#ADA; border-right-color:#8D8; border-bottom-color:#8D8; } .CCGanttDep1LagColor { border-color:#080; }
+.CCGanttDep2Color { background:#D70; border-color:#FDA; border-right-color:#FC8; border-bottom-color:#FC8; } .CCGanttDep2LagColor { border-color:#D70; }
+.CCGanttDep3Color { background:#000; border-color:#DDD; border-right-color:#BBB; border-bottom-color:#BBB; } .CCGanttDep3LagColor { border-color:#000; }
+.CCGanttDep4Color { background:#F0F; border-color:#FDF; border-right-color:#FBF; border-bottom-color:#FBF; } .CCGanttDep4LagColor { border-color:#F0F; }
+.CCGanttDep5Color { background:#0DD; border-color:#DFF; border-right-color:#BFF; border-bottom-color:#BFF; } .CCGanttDep5LagColor { border-color:#0DD; }
+.CCGanttDep6Color { background:#7D0; border-color:#DFD; border-right-color:#BFB; border-bottom-color:#BFB; } .CCGanttDep6LagColor { border-color:#7D0; }
+.CCGanttDep7Color { background:#BB0; border-color:#FF8; border-right-color:#FF0; border-bottom-color:#FF0; } .CCGanttDep7LagColor { border-color:#BB0; }
+.CCGanttDep8Color { background:#AAA; border-color:#EEE; border-right-color:#DDD; border-bottom-color:#DDD; } .CCGanttDep8LagColor { border-color:#AAA; }
+.CCGanttDep9Color { background:#F00; border-color:#FDD; border-right-color:#FBB; border-bottom-color:#FBB; } .CCGanttDep9LagColor { border-color:#F00; }
+
+.CCGanttDepArrow00Shift { width:4px; } /* Horizontal shift of the second arrow on the same place */
+.CCGanttDepArrow00Stub { width:2px; }  /* Horizontal shift of the first arrow and last dependency start on the same place */
+.CCGanttDepArrow00 { height:11px; width:9px; background:url(Dependencies.gif?v110) no-repeat; overflow:hidden; } /* Defines especially size of the dependency arrows */
+
+.CCGanttDepArrow0Left { background-position:0px 0px; } .CCGanttDepArrow0Right { background-position:-22px 0px; }
+.CCGanttDepArrow1Left { background-position:-40px 0px; } .CCGanttDepArrow1Right { background-position:-62px 0px; }
+.CCGanttDepArrow2Left { background-position:-80px 0px; } .CCGanttDepArrow2Right { background-position:-102px 0px; }
+.CCGanttDepArrow3Left { background-position:-120px 0px; } .CCGanttDepArrow3Right { background-position:-142px 0px; }
+.CCGanttDepArrow4Left { background-position:-160px 0px; } .CCGanttDepArrow4Right { background-position:-182px 0px; }
+.CCGanttDepArrow5Left { background-position:-200px 0px; } .CCGanttDepArrow5Right { background-position:-222px 0px; }
+.CCGanttDepArrow6Left { background-position:-240px 0px; } .CCGanttDepArrow6Right { background-position:-262px 0px; }
+.CCGanttDepArrow7Left { background-position:-280px 0px; } .CCGanttDepArrow7Right { background-position:-302px 0px; }
+.CCGanttDepArrow8Left { background-position:-320px 0px; } .CCGanttDepArrow8Right { background-position:-342px 0px; }
+.CCGanttDepArrow9Left { background-position:-360px 0px; } .CCGanttDepArrow9Right { background-position:-382px 0px; }
+
+.CCGanttDepStub00Shift { width:4px; }  /* Horizontal shift of the second dependency start on the same place */
+.CCGanttDepStub00 { height:7px; width:5px; background:url(Dependencies.gif?v110) no-repeat; overflow:hidden; } /* Defines especially size of the dependency start */
+
+.CCGanttDepStub0Left { background-position:-1601px 0px; } .CCGanttDepStub0Right { background-position:-1620px 0px; }
+.CCGanttDepStub1Left { background-position:-1641px 0px; } .CCGanttDepStub1Right { background-position:-1660px 0px; }
+.CCGanttDepStub2Left { background-position:-1681px 0px; } .CCGanttDepStub2Right { background-position:-1700px 0px; }
+.CCGanttDepStub3Left { background-position:-1721px 0px; } .CCGanttDepStub3Right { background-position:-1740px 0px; }
+.CCGanttDepStub4Left { background-position:-1761px 0px; } .CCGanttDepStub4Right { background-position:-1780px 0px; }
+.CCGanttDepStub5Left { background-position:-1801px 0px; } .CCGanttDepStub5Right { background-position:-1820px 0px; }
+.CCGanttDepStub6Left { background-position:-1841px 0px; } .CCGanttDepStub6Right { background-position:-1860px 0px; }
+.CCGanttDepStub7Left { background-position:-1881px 0px; } .CCGanttDepStub7Right { background-position:-1900px 0px; }
+.CCGanttDepStub8Left { background-position:-1921px 0px; } .CCGanttDepStub8Right { background-position:-1940px 0px; }
+.CCGanttDepStub9Left { background-position:-1961px 0px; } .CCGanttDepStub9Right { background-position:-1980px 0px; }
+
+.CCGanttDepLag0Left { background-position:-1611px 0px; } .CCGanttDepLag0Right { background-position:-1630px 0px; }
+.CCGanttDepLag1Left { background-position:-1651px 0px; } .CCGanttDepLag1Right { background-position:-1670px 0px; }
+.CCGanttDepLag2Left { background-position:-1691px 0px; } .CCGanttDepLag2Right { background-position:-1710px 0px; }
+.CCGanttDepLag3Left { background-position:-1731px 0px; } .CCGanttDepLag3Right { background-position:-1750px 0px; }
+.CCGanttDepLag4Left { background-position:-1771px 0px; } .CCGanttDepLag4Right { background-position:-1790px 0px; }
+.CCGanttDepLag5Left { background-position:-1811px 0px; } .CCGanttDepLag5Right { background-position:-1830px 0px; }
+.CCGanttDepLag6Left { background-position:-1851px 0px; } .CCGanttDepLag6Right { background-position:-1870px 0px; }
+.CCGanttDepLag7Left { background-position:-1891px 0px; } .CCGanttDepLag7Right { background-position:-1910px 0px; }
+.CCGanttDepLag8Left { background-position:-1931px 0px; } .CCGanttDepLag8Right { background-position:-1950px 0px; }
+.CCGanttDepLag9Left { background-position:-1971px 0px; } .CCGanttDepLag9Right { background-position:-1990px 0px; }
+
+.CCGanttDep00Hover { border-color:#F88; } .CCGanttDepLag00Hover { border-top:1px dotted red; }
+.CCGanttDepArrow00LeftHover { background-position:-3200px 0px; } .CCGanttDepArrow00RightHover { background-position:-3222px 0px; }
+.CCGanttDepStub00LeftHover { background-position:-3361px 0px; } .CCGanttDepStub00RightHover { background-position:-3370px 0px; }
+
+/* ------------------------------------------  Dependency lines 10 - 19 ---------------------------------------------------- */
+
+.CCGanttDep10 { border:1px solid; width:2px; height:2px; overflow:hidden; }
+.CCGanttDep10Lag { border-top:1px dotted; border-bottom:1px dotted; height:2px; overflow:hidden; }
+.CCGanttDep10IE { width:4px; height:4px; }
+.CCGanttDep10LagIE { height:4px; }
+.CCGanttDep10Space { margin-top:1px; }
+
+.CCGanttDep10Color { background:#DDF; border-color:#00F; } .CCGanttDep10LagColor { background:white; border-color:#00F; }
+.CCGanttDep11Color { background:#ADA; border-color:#080; } .CCGanttDep11LagColor { background:white; border-color:#080; }
+.CCGanttDep12Color { background:#FDA; border-color:#D70; } .CCGanttDep12LagColor { background:white; border-color:#D70; }
+.CCGanttDep13Color { background:#DDD; border-color:#000; } .CCGanttDep13LagColor { background:white; border-color:#000; }
+.CCGanttDep14Color { background:#FDF; border-color:#F0F; } .CCGanttDep14LagColor { background:white; border-color:#F0F; }
+.CCGanttDep15Color { background:#DFF; border-color:#0DD; } .CCGanttDep15LagColor { background:white; border-color:#0DD; }
+.CCGanttDep16Color { background:#DFD; border-color:#7D0; } .CCGanttDep16LagColor { background:white; border-color:#7D0; }
+.CCGanttDep17Color { background:#FF0; border-color:#BB0; } .CCGanttDep17LagColor { background:white; border-color:#BB0; }
+.CCGanttDep18Color { background:#EEE; border-color:#AAA; } .CCGanttDep18LagColor { background:white; border-color:#AAA; }
+.CCGanttDep19Color { background:#FDD; border-color:#F00; } .CCGanttDep19LagColor { background:white; border-color:#F00; }
+
+.CCGanttDepArrow10Shift { width:5px; }
+.CCGanttDepArrow10Stub { width:3px; }
+.CCGanttDepArrow10 { height:14px; width:16px; background:url(Dependencies.gif?v110) no-repeat; overflow:hidden; } 
+
+.CCGanttDepArrow10Left { background-position:-400px 0px; } .CCGanttDepArrow10Right { background-position:-420px 0px; }
+.CCGanttDepArrow11Left { background-position:-440px 0px; } .CCGanttDepArrow11Right { background-position:-460px 0px; }
+.CCGanttDepArrow12Left { background-position:-480px 0px; } .CCGanttDepArrow12Right { background-position:-500px 0px; }
+.CCGanttDepArrow13Left { background-position:-520px 0px; } .CCGanttDepArrow13Right { background-position:-540px 0px; }
+.CCGanttDepArrow14Left { background-position:-560px 0px; } .CCGanttDepArrow14Right { background-position:-580px 0px; }
+.CCGanttDepArrow15Left { background-position:-600px 0px; } .CCGanttDepArrow15Right { background-position:-620px 0px; }
+.CCGanttDepArrow16Left { background-position:-640px 0px; } .CCGanttDepArrow16Right { background-position:-660px 0px; }
+.CCGanttDepArrow17Left { background-position:-680px 0px; } .CCGanttDepArrow17Right { background-position:-700px 0px; }
+.CCGanttDepArrow18Left { background-position:-720px 0px; } .CCGanttDepArrow18Right { background-position:-740px 0px; }
+.CCGanttDepArrow19Left { background-position:-760px 0px; } .CCGanttDepArrow19Right { background-position:-780px 0px; }
+
+.CCGanttDepStub10Shift { width:4px; }  
+.CCGanttDepStub10 { height:8px; width:5px; background:url(Dependencies.gif?v110) no-repeat; overflow:hidden; } 
+
+.CCGanttDepStub10Left { background-position:-2000px 0px; } .CCGanttDepStub10Right { background-position:-2020px 0px; }
+.CCGanttDepStub11Left { background-position:-2040px 0px; } .CCGanttDepStub11Right { background-position:-2060px 0px; }
+.CCGanttDepStub12Left { background-position:-2080px 0px; } .CCGanttDepStub12Right { background-position:-2100px 0px; }
+.CCGanttDepStub13Left { background-position:-2120px 0px; } .CCGanttDepStub13Right { background-position:-2140px 0px; }
+.CCGanttDepStub14Left { background-position:-2160px 0px; } .CCGanttDepStub14Right { background-position:-2180px 0px; }
+.CCGanttDepStub15Left { background-position:-2200px 0px; } .CCGanttDepStub15Right { background-position:-2220px 0px; }
+.CCGanttDepStub16Left { background-position:-2240px 0px; } .CCGanttDepStub16Right { background-position:-2260px 0px; }
+.CCGanttDepStub17Left { background-position:-2280px 0px; } .CCGanttDepStub17Right { background-position:-2300px 0px; }
+.CCGanttDepStub18Left { background-position:-2320px 0px; } .CCGanttDepStub18Right { background-position:-2340px 0px; }
+.CCGanttDepStub19Left { background-position:-2360px 0px; } .CCGanttDepStub19Right { background-position:-2380px 0px; }
+
+.CCGanttDepLag10Left { background-position:-2010px 0px; } .CCGanttDepLag10Right { background-position:-2030px 0px; }
+.CCGanttDepLag11Left { background-position:-2050px 0px; } .CCGanttDepLag11Right { background-position:-2070px 0px; }
+.CCGanttDepLag12Left { background-position:-2090px 0px; } .CCGanttDepLag12Right { background-position:-2110px 0px; }
+.CCGanttDepLag13Left { background-position:-2130px 0px; } .CCGanttDepLag13Right { background-position:-2150px 0px; }
+.CCGanttDepLag14Left { background-position:-2170px 0px; } .CCGanttDepLag14Right { background-position:-2190px 0px; }
+.CCGanttDepLag15Left { background-position:-2210px 0px; } .CCGanttDepLag15Right { background-position:-2230px 0px; }
+.CCGanttDepLag16Left { background-position:-2250px 0px; } .CCGanttDepLag16Right { background-position:-2270px 0px; }
+.CCGanttDepLag17Left { background-position:-2290px 0px; } .CCGanttDepLag17Right { background-position:-2310px 0px; }
+.CCGanttDepLag18Left { background-position:-2330px 0px; } .CCGanttDepLag18Right { background-position:-2350px 0px; }
+.CCGanttDepLag19Left { background-position:-2370px 0px; } .CCGanttDepLag19Right { background-position:-2390px 0px; }
+
+.CCGanttDep10Hover { background:#F88; } .CCGanttDepLag10Hover { background:#F88; }
+.CCGanttDepArrow10LeftHover { background-position:-3240px 0px; } .CCGanttDepArrow10RightHover { background-position:-3260px 0px; }
+.CCGanttDepStub10LeftHover { background-position:-3380px 0px; } .CCGanttDepStub10RightHover { background-position:-3390px 0px; }
+
+/* ------------------------------------------  Dependency lines 20 - 29 ---------------------------------------------------- */
+
+.CCGanttDep20 { border:2px solid; width:3px; height:3px; overflow:hidden; }
+.CCGanttDep20Lag { margin-top:2px; border-top:1px dotted; border-bottom:1px dotted; height:1px; overflow:hidden; } 
+.CCGanttDep20IE { width:7px; height:7px; } 
+.CCGanttDep20LagIE { height:3px; } 
+.CCGanttDep20Space { margin-top:1px; }
+
+.CCGanttDep20Color { background:#00F; border-color:#DDF; border-right-color:#BBF; border-bottom-color:#BBF; } .CCGanttDep20LagColor { border-color:#00F; background:#DDF; } 
+.CCGanttDep21Color { background:#080; border-color:#ADA; border-right-color:#7C7; border-bottom-color:#7C7; } .CCGanttDep21LagColor { border-color:#080; background:#ADA; } 
+.CCGanttDep22Color { background:#D70; border-color:#FDA; border-right-color:#FC8; border-bottom-color:#FC8; } .CCGanttDep22LagColor { border-color:#D70; background:#FDA; } 
+.CCGanttDep23Color { background:#000; border-color:#DDD; border-right-color:#BBB; border-bottom-color:#BBB; } .CCGanttDep23LagColor { border-color:#000; background:#DDD; } 
+.CCGanttDep24Color { background:#F0F; border-color:#FDF; border-right-color:#FBF; border-bottom-color:#FBF; } .CCGanttDep24LagColor { border-color:#F0F; background:#FDF; } 
+.CCGanttDep25Color { background:#0DD; border-color:#DFF; border-right-color:#BFF; border-bottom-color:#BFF; } .CCGanttDep25LagColor { border-color:#0DD; background:#DFF; } 
+.CCGanttDep26Color { background:#7D0; border-color:#DFD; border-right-color:#BFB; border-bottom-color:#BFB; } .CCGanttDep26LagColor { border-color:#7D0; background:#DFD; } 
+.CCGanttDep27Color { background:#BB0; border-color:#FF8; border-right-color:#FF0; border-bottom-color:#FF0; } .CCGanttDep27LagColor { border-color:#BB0; background:#FF8; } 
+.CCGanttDep28Color { background:#AAA; border-color:#EEE; border-right-color:#DDD; border-bottom-color:#DDD; } .CCGanttDep28LagColor { border-color:#AAA; background:#EEE; } 
+.CCGanttDep29Color { background:#F00; border-color:#FDD; border-right-color:#FBB; border-bottom-color:#FBB; } .CCGanttDep29LagColor { border-color:#F00; background:#FDD; } 
+
+.CCGanttDepArrow20Shift { width:5px; }
+.CCGanttDepArrow20Stub { width:3px; }
+.CCGanttDepArrow20 { height:15px; width:15px; background:url(Dependencies.gif?v110) no-repeat; overflow:hidden; } 
+
+.CCGanttDepArrow20Left { background-position:-800px 0px; } .CCGanttDepArrow20Right { background-position:-820px 0px; }
+.CCGanttDepArrow21Left { background-position:-840px 0px; } .CCGanttDepArrow21Right { background-position:-860px 0px; }
+.CCGanttDepArrow22Left { background-position:-880px 0px; } .CCGanttDepArrow22Right { background-position:-900px 0px; }
+.CCGanttDepArrow23Left { background-position:-920px 0px; } .CCGanttDepArrow23Right { background-position:-940px 0px; }
+.CCGanttDepArrow24Left { background-position:-960px 0px; } .CCGanttDepArrow24Right { background-position:-980px 0px; }
+.CCGanttDepArrow25Left { background-position:-1000px 0px; } .CCGanttDepArrow25Right { background-position:-1020px 0px; }
+.CCGanttDepArrow26Left { background-position:-1040px 0px; } .CCGanttDepArrow26Right { background-position:-1060px 0px; }
+.CCGanttDepArrow27Left { background-position:-1080px 0px; } .CCGanttDepArrow27Right { background-position:-1100px 0px; }
+.CCGanttDepArrow28Left { background-position:-1120px 0px; } .CCGanttDepArrow28Right { background-position:-1140px 0px; }
+.CCGanttDepArrow29Left { background-position:-1160px 0px; } .CCGanttDepArrow29Right { background-position:-1180px 0px; }
+
+.CCGanttDepStub20Shift { width:4px; }
+.CCGanttDepStub20 { height:11px; width:5px; background:url(Dependencies.gif?v110) no-repeat; overflow:hidden; } 
+
+.CCGanttDepStub20Left { background-position:-2400px 0px; } .CCGanttDepStub20Right { background-position:-2420px 0px; }
+.CCGanttDepStub21Left { background-position:-2440px 0px; } .CCGanttDepStub21Right { background-position:-2460px 0px; }
+.CCGanttDepStub22Left { background-position:-2480px 0px; } .CCGanttDepStub22Right { background-position:-2500px 0px; }
+.CCGanttDepStub23Left { background-position:-2520px 0px; } .CCGanttDepStub23Right { background-position:-2540px 0px; }
+.CCGanttDepStub24Left { background-position:-2560px 0px; } .CCGanttDepStub24Right { background-position:-2580px 0px; }
+.CCGanttDepStub25Left { background-position:-2600px 0px; } .CCGanttDepStub25Right { background-position:-2620px 0px; }
+.CCGanttDepStub26Left { background-position:-2640px 0px; } .CCGanttDepStub26Right { background-position:-2660px 0px; }
+.CCGanttDepStub27Left { background-position:-2680px 0px; } .CCGanttDepStub27Right { background-position:-2700px 0px; }
+.CCGanttDepStub28Left { background-position:-2720px 0px; } .CCGanttDepStub28Right { background-position:-2740px 0px; }
+.CCGanttDepStub29Left { background-position:-2760px 0px; } .CCGanttDepStub29Right { background-position:-2780px 0px; }
+
+.CCGanttDepLag20Left { background-position:-2410px 0px; } .CCGanttDepLag20Right { background-position:-2430px 0px; }
+.CCGanttDepLag21Left { background-position:-2450px 0px; } .CCGanttDepLag21Right { background-position:-2470px 0px; }
+.CCGanttDepLag22Left { background-position:-2490px 0px; } .CCGanttDepLag22Right { background-position:-2510px 0px; }
+.CCGanttDepLag23Left { background-position:-2530px 0px; } .CCGanttDepLag23Right { background-position:-2550px 0px; }
+.CCGanttDepLag24Left { background-position:-2570px 0px; } .CCGanttDepLag24Right { background-position:-2590px 0px; }
+.CCGanttDepLag25Left { background-position:-2610px 0px; } .CCGanttDepLag25Right { background-position:-2630px 0px; }
+.CCGanttDepLag26Left { background-position:-2650px 0px; } .CCGanttDepLag26Right { background-position:-2670px 0px; }
+.CCGanttDepLag27Left { background-position:-2690px 0px; } .CCGanttDepLag27Right { background-position:-2710px 0px; }
+.CCGanttDepLag28Left { background-position:-2730px 0px; } .CCGanttDepLag28Right { background-position:-2750px 0px; }
+.CCGanttDepLag29Left { background-position:-2770px 0px; } .CCGanttDepLag29Right { background-position:-2790px 0px; }
+
+.CCGanttDep20Hover { border-color:#F88; } .CCGanttDepLag20Hover { background:red; }
+.CCGanttDepArrow20LeftHover { background-position:-3280px 0px; } .CCGanttDepArrow20RightHover { background-position:-3300px 0px; }
+.CCGanttDepStub20LeftHover { background-position:-3400px 0px; } .CCGanttDepStub20RightHover { background-position:-3410px 0px; }
+
+/* ------------------------------------------  Dependency lines 30 - 39 ---------------------------------------------------- */
+
+.CCGanttDep30 { border:1px solid; width:4px; height:4px; overflow:hidden; }
+.CCGanttDep30Lag { border-top:1px dotted; border-bottom:1px dotted; height:4px; overflow:hidden; }
+.CCGanttDep30IE { width:6px; height:6px; }
+.CCGanttDep30LagIE { height:6px; }
+.CCGanttDep30Space { margin-top:1px; }
+
+.CCGanttDep30Color { background:#DDF; border-color:#00F; } .CCGanttDep30LagColor { background:white; border-color:#00F; }
+.CCGanttDep31Color { background:#ADA; border-color:#080; } .CCGanttDep31LagColor { background:white; border-color:#080; }
+.CCGanttDep32Color { background:#FDA; border-color:#D70; } .CCGanttDep32LagColor { background:white; border-color:#D70; }
+.CCGanttDep33Color { background:#DDD; border-color:#000; } .CCGanttDep33LagColor { background:white; border-color:#000; }
+.CCGanttDep34Color { background:#FDF; border-color:#F0F; } .CCGanttDep34LagColor { background:white; border-color:#F0F; }
+.CCGanttDep35Color { background:#DFF; border-color:#0DD; } .CCGanttDep35LagColor { background:white; border-color:#0DD; }
+.CCGanttDep36Color { background:#DFD; border-color:#7D0; } .CCGanttDep36LagColor { background:white; border-color:#7D0; }
+.CCGanttDep37Color { background:#FF0; border-color:#BB0; } .CCGanttDep37LagColor { background:white; border-color:#BB0; }
+.CCGanttDep38Color { background:#EEE; border-color:#AAA; } .CCGanttDep38LagColor { background:white; border-color:#AAA; }
+.CCGanttDep39Color { background:#FDD; border-color:#F00; } .CCGanttDep39LagColor { background:white; border-color:#F00; }
+
+.CCGanttDepArrow30Shift { width:6px; }
+.CCGanttDepArrow30Stub { width:3px; }
+.CCGanttDepArrow30 { height:16px; width:17px; background:url(Dependencies.gif?v110) no-repeat; overflow:hidden; }
+
+.CCGanttDepArrow30Left { background-position:-1200px 0px; } .CCGanttDepArrow30Right { background-position:-1220px 0px; }
+.CCGanttDepArrow31Left { background-position:-1240px 0px; } .CCGanttDepArrow31Right { background-position:-1260px 0px; }
+.CCGanttDepArrow32Left { background-position:-1280px 0px; } .CCGanttDepArrow32Right { background-position:-1300px 0px; }
+.CCGanttDepArrow33Left { background-position:-1320px 0px; } .CCGanttDepArrow33Right { background-position:-1340px 0px; }
+.CCGanttDepArrow34Left { background-position:-1360px 0px; } .CCGanttDepArrow34Right { background-position:-1380px 0px; }
+.CCGanttDepArrow35Left { background-position:-1400px 0px; } .CCGanttDepArrow35Right { background-position:-1420px 0px; }
+.CCGanttDepArrow36Left { background-position:-1440px 0px; } .CCGanttDepArrow36Right { background-position:-1460px 0px; }
+.CCGanttDepArrow37Left { background-position:-1480px 0px; } .CCGanttDepArrow37Right { background-position:-1500px 0px; }
+.CCGanttDepArrow38Left { background-position:-1520px 0px; } .CCGanttDepArrow38Right { background-position:-1540px 0px; }
+.CCGanttDepArrow39Left { background-position:-1560px 0px; } .CCGanttDepArrow39Right { background-position:-1580px 0px; }
+
+.CCGanttDepStub30Shift { width:4px; }
+.CCGanttDepStub30 { height:12px; width:6px; background:url(Dependencies.gif?v110) no-repeat; overflow:hidden; }
+
+.CCGanttDepStub30Left { background-position:-2800px 0px; } .CCGanttDepStub30Right { background-position:-2820px 0px; }
+.CCGanttDepStub31Left { background-position:-2840px 0px; } .CCGanttDepStub31Right { background-position:-2860px 0px; }
+.CCGanttDepStub32Left { background-position:-2880px 0px; } .CCGanttDepStub32Right { background-position:-2900px 0px; }
+.CCGanttDepStub33Left { background-position:-2920px 0px; } .CCGanttDepStub33Right { background-position:-2940px 0px; }
+.CCGanttDepStub34Left { background-position:-2960px 0px; } .CCGanttDepStub34Right { background-position:-2980px 0px; }
+.CCGanttDepStub35Left { background-position:-3000px 0px; } .CCGanttDepStub35Right { background-position:-3020px 0px; }
+.CCGanttDepStub36Left { background-position:-3040px 0px; } .CCGanttDepStub36Right { background-position:-3060px 0px; }
+.CCGanttDepStub37Left { background-position:-3080px 0px; } .CCGanttDepStub37Right { background-position:-3100px 0px; }
+.CCGanttDepStub38Left { background-position:-3120px 0px; } .CCGanttDepStub38Right { background-position:-3140px 0px; }
+.CCGanttDepStub39Left { background-position:-3160px 0px; } .CCGanttDepStub39Right { background-position:-3180px 0px; }
+
+.CCGanttDepLag30Left { background-position:-2810px 0px; } .CCGanttDepLag30Right { background-position:-2830px 0px; }
+.CCGanttDepLag31Left { background-position:-2850px 0px; } .CCGanttDepLag31Right { background-position:-2870px 0px; }
+.CCGanttDepLag32Left { background-position:-2890px 0px; } .CCGanttDepLag32Right { background-position:-2910px 0px; }
+.CCGanttDepLag33Left { background-position:-2930px 0px; } .CCGanttDepLag33Right { background-position:-2950px 0px; }
+.CCGanttDepLag34Left { background-position:-2970px 0px; } .CCGanttDepLag34Right { background-position:-2990px 0px; }
+.CCGanttDepLag35Left { background-position:-3010px 0px; } .CCGanttDepLag35Right { background-position:-3030px 0px; }
+.CCGanttDepLag36Left { background-position:-3050px 0px; } .CCGanttDepLag36Right { background-position:-3070px 0px; }
+.CCGanttDepLag37Left { background-position:-3090px 0px; } .CCGanttDepLag37Right { background-position:-3110px 0px; }
+.CCGanttDepLag38Left { background-position:-3130px 0px; } .CCGanttDepLag38Right { background-position:-3150px 0px; }
+.CCGanttDepLag39Left { background-position:-3170px 0px; } .CCGanttDepLag39Right { background-position:-3190px 0px; }
+
+.CCGanttDep30Hover { background:#F88; } .CCGanttDepLag30Hover { background:#F88; }
+.CCGanttDepArrow30LeftHover { background-position:-3320px 0px; } .CCGanttDepArrow30RightHover { background-position:-3340px 0px; }
+.CCGanttDepStub30LeftHover { background-position:-3420px 0px; } .CCGanttDepStub30RightHover { background-position:-3430px 0px; }
+
+/* ---------------------------------------  Base dependency settings ---------------------------------------------------- */
+
+/* --- Base dependency sizes for calculation, change only the defined attribute values --- */
+.CCGanttDepStartShift,.CCGanttDepStartShiftMilestone { margin-left:-1px; } /* Shift of the line start from its box edge */
+.CCGanttDepStartShiftAdjacent { margin-left:0px; } /* Shift of the line start from its box edge when set GanttAdjacentBars=1 */
+.CCGanttDepStartShiftLag { margin-left:2px; } /* Shift of the line start when lag goes into the box, the value is shift to the box */
+.CCGanttDepEndShift,.CCGanttDepEndShiftMilestone { margin-left:-1px; }  /* Shift of the arrow from its box edge */
+.CCGanttDepEndShiftAdjacent { margin-left:0px; }  /* Shift of the arrow from its box edge when set GanttAdjacentBars=1 */
+.CCGanttDepRange { width:5px; } /* Width of horizontal dependency level, every level shows only one line, next lines are shifted */
+
+/* --- Base dependency settings, don't change them --- */
+.CCGanttDepHorzLeft,.CCGanttDepHorzBoth { border-left:0px none; overflow:hidden; }
+.CCGanttDepHorzRight,.CCGanttDepHorzBoth { border-right:0px none; overflow:hidden; }
+.CCGanttDepHorz { overflow:hidden; }
+.CCGanttDepVert,.CCGanttDepVertTop { border-top:0px none; border-bottom:0px none; overflow:hidden; margin-bottom:-5000px; height:5000px; }
+.CCGanttDepNone { border:0px none; overflow:hidden; margin-bottom:-5000px; height:5000px; }
+
+
+
+
+/* -------------------------------------------------------------------------------------------------------------------------- */
+/*                                                       Constraints                                                       */
+/* -------------------------------------------------------------------------------------------------------------------------- */
+
+.CCGanttConstraint { background:url(Gantt.gif?v110) no-repeat; width:7px; height:18px; overflow:hidden; }
+.CCGanttMinStart { background-position:-500px 0px; }
+.CCGanttMaxStart { background-position:-550px 0px; }
+.CCGanttMinEnd { background-position:-600px 0px; }
+.CCGanttMaxEnd { background-position:-650px 0px; }
+.CCGanttMinStartHover { background-position:-700px 0px; }
+.CCGanttMaxStartHover { background-position:-750px 0px; }
+.CCGanttMinEndHover { background-position:-800px 0px; }
+.CCGanttMaxEndHover { background-position:-850px 0px; }
+.CCGanttConstraintCustom { background-repeat:no-repeat; width:16px; height:15px; overflow:hidden; }
+.CCGanttConstraintCustomHover { background-color:red; }
+
+
+
+
+/* -------------------------------------------------------------------------------------------------------------------------- */
+/*                                      Background and Straight vertical lines                                             */
+/* -------------------------------------------------------------------------------------------------------------------------- */
+
+/* --- Base background for GanttBackground, GanttExclude, GanttLines, GanttBase, GanttFinish --- */
+.CCGanttBack { height:300000px; margin-bottom:-300000px; overflow:hidden; margin-left:auto; margin-right:auto; }  /* Default background setting, don't change */
+.CCGanttBackRow {  height:5000px; margin-bottom:-5000px; overflow:hidden; margin-left:auto; margin-right:auto; }  /* Default background setting if shown in individual row, don't change */
+.CCGanttBackEnd { margin-top:-300000; height:0px; overflow:hidden; }                                              /* Ending tag of background definition, don't change */
+.CCGanttBackEndIE { margin-top:-300021; height:21px; overflow:hidden; }                                           /* Ending tag of background definition for IE5 quirks mode, don't change */
+
+.CCGanttBackDefault { background:white; }                                                                          /* Default background color */
+.CCGanttBackRowDefault { background:white; }                                                                      /* Default background color if shown in individual row */
+
+/* --- Predefined 11 gray backgrounds --- */
+.CCGanttBack0 { background:#FFFFFF; }
+.CCGanttBack1 { background:#E8E8E8; }
+.CCGanttBack2 { background:#D0D0D0; }
+.CCGanttBack3 { background:#B8B8B8; }
+.CCGanttBack4 { background:#A0A0A0; }
+.CCGanttBack5 { background:#888888; }
+.CCGanttBack6 { background:#707070; }
+.CCGanttBack7 { background:#585858; }
+.CCGanttBack8 { background:#404040; }
+.CCGanttBack9 { background:#282828; }
+.CCGanttBack10 { background:#101010; }
+
+/* --- Predefined 17 background colors --- */
+.CCGanttBackAqua { background:aqua; }
+.CCGanttBackBlack { background:black; }
+.CCGanttBackBlue { background:blue; }
+.CCGanttBackFuchsia { background:fuchsia; }
+.CCGanttBackGray { background:gray; }
+.CCGanttBackGreen { background:green; }
+.CCGanttBackLime { background:lime; }
+.CCGanttBackMaroon { background:maroon; }
+.CCGanttBackNavy { background:navy; }
+.CCGanttBackOlive { background:olive; }
+.CCGanttBackOrange { background:orange; }
+.CCGanttBackPurple { background:purple; }
+.CCGanttBackRed { background:red; }
+.CCGanttBackSilver { background:silver; }
+.CCGanttBackTeal { background:teal; }
+.CCGanttBackWhite { background:white; }
+.CCGanttBackYellow { background:yellow; }
+
+/* --- Exclude colors if not defined the GanttExclude type */
+.CCGanttExclude { background:#F0F0E0; }        /* Background for Exclude if shown */
+.CCGanttExcludeHidden { background:#D8F8D8; }  /* Background for Exclude if hidden by GanttHideExclude='1' */
+
+/* --- Base and Finish lines --- */
+.CCGanttBase,.CCGanttFinish { background:#FF9E0C; width:2px; }
+.CCGanttFinishAuto,.CCGanttBaseAuto { background:#FF9E0C; width:1px; }
+
+/* --- Vertical Lines --- */
+.CCGanttLineAqua { background:aqua; width:1px; } .CCGanttLineAqua2 { background:aqua; width:2px; } .CCGanttLineAqua3 { background:aqua; width:3px; }
+.CCGanttLineBlack { background:black; width:1px; } .CCGanttLineBlack2 { background:black; width:2px; } .CCGanttLineBlack3 { background:black; width:3px; }
+.CCGanttLineBlue { background:blue; width:1px; } .CCGanttLineBlue2 { background:blue; width:2px; } .CCGanttLineBlue3 { background:blue; width:3px; }
+.CCGanttLineFuchsia { background:fuchsia; width:1px; } .CCGanttLineFuchsia2 { background:fuchsia; width:2px; } .CCGanttLineFuchsia3 { background:fuchsia; width:3px; }
+.CCGanttLineGray { background:gray; width:1px; } .CCGanttLineGray2 { background:gray; width:2px; } .CCGanttLineGray3 { background:gray; width:3px; }
+.CCGanttLineGreen { background:green; width:1px; } .CCGanttLineGreen2 { background:green; width:2px; } .CCGanttLineGreen3 { background:green; width:3px; }
+.CCGanttLineLime { background:lime; width:1px; } .CCGanttLineLime2 { background:lime; width:2px; } .CCGanttLineLime3 { background:lime; width:3px; }
+.CCGanttLineMaroon { background:maroon; width:1px; } .CCGanttLineMaroon2 { background:maroon; width:2px; } .CCGanttLineMaroon3 { background:maroon; width:3px; }
+.CCGanttLineNavy { background:navy; width:1px; } .CCGanttLineNavy2 { background:navy; width:2px; } .CCGanttLineNavy3 { background:navy; width:3px; }
+.CCGanttLineOlive { background:olive; width:1px; } .CCGanttLineOlive2 { background:olive; width:2px; } .CCGanttLineOlive3 { background:olive; width:3px; }
+.CCGanttLineOrange { background:orange; width:1px; } .CCGanttLineOrange2 { background:orange; width:2px; } .CCGanttLineOrange3 { background:orange; width:3px; }
+.CCGanttLinePurple { background:purple; width:1px; } .CCGanttLinePurple2 { background:purple; width:2px; } .CCGanttLinePurple3 { background:purple; width:3px; }
+.CCGanttLineRed { background:red; width:1px; } .CCGanttLineRed2 { background:red; width:2px; } .CCGanttLineRed3 { background:red; width:3px; }
+.CCGanttLineSilver { background:silver; width:1px; } .CCGanttLineSilver2 { background:silver; width:2px; } .CCGanttLineSilver3 { background:silver; width:3px; }
+.CCGanttLineTeal { background:teal; width:1px; } .CCGanttLineTeal2 { background:teal; width:2px; } .CCGanttLineTeal3 { background:teal; width:3px; }
+.CCGanttLineWhite { background:white; width:1px; } .CCGanttLineWhite2 { background:white; width:2px; } .CCGanttLineWhite3 { background:white; width:3px; }
+.CCGanttLineYellow { background:yellow; width:1px; } .CCGanttLineYellow2 { background:yellow; width:2px; } .CCGanttLineYellow3 { background:yellow; width:3px; }
+
+.CCGanttLineHidden { background:none; width:1px; }
+
+/* --- Hover vertical lines --- */
+.CCGanttLineHover { background:red; } /* Used for all vertical lines, base and finish */
+.CCGanttLineRedHover,.CCGanttLineRed2Hover,.CCGanttLineRed3Hover { background:black; }
+.CCGanttBaseHover,.CCGanttBaseAutoHover,.CCGanttFinishHover,.CCGanttFinishAutoHover { background:black; }
+.CCGanttLineHiddenHover { background:black; }
+
+
+
+
+/* -------------------------------------------------------------------------------------------------------------------------- */
+/*                                               Gantt column Header                                                       */
+/* -------------------------------------------------------------------------------------------------------------------------- */
+
+.CCGanttHeaderOuter { }
+.CCGanttHeaderBase {
+   font:12px "Trebuchet MS", Tahoma, Arial; white-space:nowrap; text-align:center; color:black;
+   border-right:1px solid #DDD; padding-left:1px; padding-right:1px;
+   }
+
+
+
+
+/* -------------------------------------------------------------------------------------------------------------------------- */
+/*                                                       Other                                                             */
+/* -------------------------------------------------------------------------------------------------------------------------- */
+
+/* Space below bars and icons, reserved mostly for dependencies */
+.CCGanttBottom { height:4px; }
+.CCGanttIconBottom { height:0px; }
+
+/* Rectagle shown when selecting more run boxes. */
+.CCGanttSelectRect { position:absolute; z-index:300; border:1px solid black; background:gray; opacity:0.2; filter:alpha(opacity=20); }
+
+/* Vertical line shown when moving or resizing Gantt object */
+.CCGanttDragLine1 { position:absolute; z-index:300; border-left:1px solid black; overflow:hidden; width:1px; }
+
+/* Second vertical line shown when moving Gantt object */
+.CCGanttDragLine2 { position:absolute; z-index:300; border-left:1px solid gray; overflow:hidden; width:1px; }
+
+/* Parent hover tag used especially for dependencies */
+.CCGanttHover { position:absolute; left:0px; top:0px; z-index:6; }
+
+/* Tip shown during dragging Gantt object. The ...Run... is used if moved (not slide) GanttRun */
+.CCDragGanttTip,.CCDragGanttRunTip,.CCGanttPinchZoom {
+   background:#f4f4f4; border:1px solid #d0d0d0; padding:3px; cursor:default;
+   margin-top:-4px; font:12px/14px Arial,Helvetica,sans-serif; white-space:nowrap; position:absolute; z-index:300;
+   }
+.CCDragGanttRunTip { margin-top:-12px; }
+.CCGanttPinchZoom { margin-top:-20px; }
+
+/* Do not change, marks the style loaded */
+.CCGanttLoaded { border:1px solid black!important; }

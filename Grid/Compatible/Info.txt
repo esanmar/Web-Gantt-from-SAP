@@ -1,0 +1,3 @@
+TreeGrid CSS styles from version 12.1 and older.
+Compatible with all browsers including IE9 and older.
+Every style is for grid, sheet and Gantt chart.

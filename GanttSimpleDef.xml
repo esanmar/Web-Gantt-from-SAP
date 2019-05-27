@@ -1,0 +1,58 @@
+<Grid>
+   <Cfg id="GanttSimpleTest"/> <!-- Displays tree in column T (Task / Subtask) -->
+   <Cfg Editing="1" Deleting="1" Adding="0" Selecting="1" Dragging="1"/>
+   <Cfg MaxHeight="1"/> <!-- Resizes the grid to the whole page -->
+   <Cfg GanttStyle='Standard'/>
+   <Cfg Paging="2"/> 
+   <Cfg Code='BGCSNRRPQWCUFD'/>
+   <Head>
+      <Filter idVisible="0" PButton="Defaults" PDefaults="|*FilterOff|*RowsAll" PRange="1" TButton="Defaults" TDefaults="|*FilterOff|*RowsAll" TRange="1" AButton="Defaults" ADefaults="|*FilterOff|*RowsAll" ARange="1" OPButton="Defaults" OPDefaults="|*FilterOff|*RowsAll" OPRange="1" AVButton="Defaults" AVDefaults="|*FilterOff|*RowsAll" AVRange="1" COButton="Defaults" CODefaults="|*FilterOff|*RowsAll" CORange="1"/>
+   </Head>
+   <DefCols>
+      <D Name="C" CaseSensitive="0"/> <!-- Ignores case when it sorts, groups and filters -->
+   </DefCols>
+   <LeftCols>
+      <C Name="id" Width="50" Type="Float" CanEdit="1"/> <!-- Row id, informational column -->
+      <C Name="T" Width="80" Type="Text"/> <!-- Column Task / Section-->
+      <C Name="A" Width="45" Type="Text"/>
+      <C Name="P" Width="60"/>
+      <C Name="R" Width="160"/>
+      <C Name="S" Width="70" Type="Date" Format="dd/mm/yyyy"/> <!-- Column Start date-->
+      <C Name="E" Width="70" Type="Date" Format="dd/mm/yyyy"/> <!-- Column End Date -->
+      <C Name="D" Width="70" Type="Float" HtmlPostfix=" days"/> <!-- Column Duration -->
+      <C Name="C" Width="50" Type="Float" Format="##.##\%;;0\%"/> <!-- Column Complete -->
+      <C Name="CA" Width="50" Type="Float"/> <!-- Column Complete -->
+      <C Name="DE" Width="50" Type="Float"/> <!-- Column Complete -->
+      <C Name="EE" Width="100" Type="Date" Format="MMM dd" Visible="0" Formula="ED>E?ED:''"/>
+      <C Name="SD" Width="70" Type="Date" Format="MMM dd" Visible="0" Formula="ED>E?E:''"/> <!-- Column Start date delay-->
+      <C Name="ED" Width="70" Type="Date" Format="dd/mm/yyyy"/> <!-- Column End date delay -->
+      <C Name="DD" Width="70" Type="Float" Formula="ED?((ED-E)/86400000):''" CanEmpty="1" Format="0 days delay;;"/> <!-- Column Duration delay-->
+      <C Name="M" Width="60" Type="Date" Format="dd/mm/yyyy"/>
+      <C Name="O" Width="60" Type="Date" Format="dd/mm/yyyy"/>
+      <C Name="W" Width="60" Type="Date" Format="dd/mm/yyyy"/>
+      <C Name="V" Width="40"/>
+      <C Name="AV" Width="20"/>
+			<C Name="CO" Width="20"/>
+      <C Name="OP" Width="20"/>
+    </LeftCols>
+   <Cols>
+      <!-- Gantt chart column -->
+      <C Name="G" Type="Gantt"/>
+      <C Name="G" GanttCount="2"/> <!-- Defines two main bars -->
+      <C Name="G" GanttStart="S" GanttEnd="E" GanttDuration="D" GanttComplete="C"/> <!-- Defines the source columns for the first Gantt chart -->
+      <C Name="G" GanttStart1="SD" GanttEnd1="EE" GanttDuration1="DD" GanttClass1="Red"/> <!-- Defines the source columns for the second Gantt chart -->
+      <C Name="G" GanttUnits="d" GanttWidth="5" GanttChartRound="w" GanttRight="1"/>  <!-- Defines the Gantt zoom -->
+      <C Name="G" GanttLastUnit="d"/> <!-- The end date is the last day -->
+      <C Name="G" GanttHeader1="w#yyyy" GanttHeader2="w#dddddddd" GanttHeader3="d#%d"/>  <!-- Defines Gantt header for the zoom -->
+      <C Name="G" GanttBackground="w#1/6/2008~1/6/2008 0:01;4/23/2018~4/29/2018"/> <!-- Visualy separates the weeks by vertical line -->
+      <C Name="G" GanttEdit="Main"/> <!-- Only the tasks can dependencies can be modified -->
+      <C Name="G" GanttResources="R"/>
+      <C Name="G" GanttTip="Start:*Start*&lt;br>End:*End*"/>
+   </Cols>
+   
+ 
+   <Header id="ID" T="Task" A="Avion" P="Material" R="Resource" S="Start" E="Customer Date" D="Duration" C="Complete" CA="Cantidad" DE="Desviacion" ED="Real end" DD="Delay" M="FechaSalida" O="FechaEM" W="FechaConf" V="Desc" AV="Puesto" CO="Contrato" OP="OP" G="Gantt"/> <!-- Column captions -->
+   
+   <Toolbar Cells05="CNT" CNTFormula="count()" CNTType="Text" CNTWidth="40"/>
+  
+</Grid>

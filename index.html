@@ -1,0 +1,54 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN">
+<html>
+   <head>
+   	<title>B787 Planning</title>
+      <script src="http://aerometalls.com/caer/Grid/GridE.js"> </script>
+      <script language="javascript">
+Grids.OnLoaded = function(G){
+var D = new Date();
+D.setDate(D.getDate()-D.getDay());
+G.Cols.G.GanttBackground = D-0+"~"+(D-0+604800000);
+}
+
+</script>
+
+   <style type="text/css">
+   .titulo {
+	font-family: Arial, Helvetica, sans-serif;
+	font-size: 36px;
+}
+   </style>
+   
+   </head>
+   <body class="Example">
+      <style>
+         /* Examples shared styles */
+         .Example h1 { font:bold 30px Arial; padding:5px 0px 5px 0px; margin:0px; text-align:center; }
+         .Example h2 { font:bold 15px Arial; padding:0px; margin:0px 0px 10px 0px; text-align:center; color:#757575; }
+         .Example h3,.Example h4 { display:inline-block; font:bold  15px Arial; padding:0px 5px 0px 5px; border-radius:2px; color:black; margin:2px; font-style:normal; color:#333; }
+         .Example h3 { background:#EE9; border:1px solid #DD8; }
+         .Example h4 { background:#BDE; border:1px solid #ACD; }
+         .Example a { text-decoration:underline; }      
+         .Example li { padding-bottom:8px; }
+         .Example ul { margin:6px 0px 0px 20px; font:bold 13px Arial; }
+         .Example .Desc { margin:0px 5px 10px 5px; padding:10px; border:1px solid #dfdfdf; }
+         .Example .Desc > ul { margin-left:0px; padding:0px 0px 0px 15px; clear:both; }
+         .Example .Desc b { color:#0585B9; }
+         .Example .Path { font:bold normal 12px Arial; color:#0585B9; }
+         .Example .Path b { color:#D73938; }
+         .Example .Path u { text-decoration:none; color:black; font-weight:bold; padding:0px 2px 0px 2px; }
+         .Example .Path i { color:black; font-style:normal; font-weight:bold; }
+         .Example .Xml { margin-bottom:6px; font-size:12px; color:#757575; }
+         .Example .Border { margin:0px 5px 15px 5px; }
+         .Example .Main { }
+      </style>
+     <!-- <center class="Path"><script>document.write(location.href.replace(/(.*)(\/Examples\/|\/ExamplesGantt\/)([^\/]+)\/([^\/]+)\/([^\/]+)$/,"$2<b>$3</b>/<i>$4</i>/$5").replace(/([^<]|^)(\/|\.)/g,"$1<u>$2</u>"));</script></center>-->
+      <!--<h1>SAFRAN</h1>-->
+      <span class="titulo">B787</span>&nbsp;&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;&nbsp;
+      <div class="Border">
+         <div class="Main" style="WIDTH:100%;HEIGHT:650px;">
+            <bdo Debug="problem" Layout_Url="GanttSimpleDef.xml" Data_Url="GanttSimpleDataBoeing.xml"></bdo>
+         </div>
+      </div>
+   </body>
+</html>

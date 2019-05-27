@@ -1,0 +1,10 @@
+JSZip is third party library for LZ compression. 
+
+It is independent on TreeGrid. It is distributed under MIT or GPLv3 license.
+It can be downloaded or its licensing read at https://stuk.github.io/jszip/
+
+It is loaded by TreeGrid only for client export to XLSX. 
+To not use it at all, set <Cfg JSZip='0'/>, in this case the export will produce longer uncompressed XLSX files.
+
+js.zip.min.js is the latest version with asynchronous usage
+js.zip.min.sync.js is version 2.6. with synchronous usage, if grid has set Sync='1', required for printing to pdf

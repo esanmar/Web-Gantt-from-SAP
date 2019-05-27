@@ -1,0 +1,536 @@
+<!-- TreeGrid help base file -->
+
+<!-- It should be modified for final application according to the customized toolbars and mouse and key action schema -->
+
+<!-- This document is based on Standard CSS style, to use settings from another style replace all "TS" by the style prefix and link the style by <link> in header -->
+
+<html>
+	<head>
+      <title>TreeGrid and Gantt chart Help document | TreeGrid</title>
+		<meta http-equiv="Content-Language" content="en-us">
+      <link href="Styles/StandardGrid.css" rel="stylesheet"/>
+      <style>
+         .TSMain h1 { text-align:center; font-size:30px; font-weight:normal; line-height:1.1; margin-top:20px; margin-bottom:10px; font-family:'Open Sans', Arial, Verdana, Tahoma, sans-serif; color:#333; }
+         .TSMain h2 { font-size:20px; font-weight:normal; padding:10px; background:#F5F5F5; display:block; color:#516379; }
+         .TSMain h3 { color:red; font-size:12px; text-align:center; }
+			u,em { background-repeat:no-repeat; background-position:center center!important; text-decoration:none; display:inline!important; position:static!important; }
+         u { padding-left:22px!important; background-size:15px 15px; }
+			em { padding-left:26px!important; background-size:18px 18px; padding-bottom:5px; }   
+         li { padding-bottom:2px; }
+         b { color:#00A; }
+         .Header { background-color:#586980; border-radius:3px; margin-left:3px; margin-right:3px; }
+         .ToolbarHelp li { line-height:22px; }
+         .Popup { padding-left:34px!important; }
+         .Color { text-decoration:none; padding-left:20px; padding-right:20px; }
+         .Color2 { line-height:20px; }
+	    </style>
+	</head>
+	<body>
+   <div class="TSMain">
+		<h1>Using EJS TreeGrid</h1>
+      <h3>All these settings can be fully customized by developers, therefore this help should be modified to match the actual state</h3>
+      <a name="Mouse"></a>
+		<h2>Mouse functions</h2>
+		<ul>
+			<li><b>Click to cell</b> focuses and lets edit (editable) cell (by pressing character key).</li>
+         <li><b>Right click to cell</b> shows popup menu for the cell, if defined</li>
+         <li><b>Mouse wheel</b> scrolls active grid vertically. The active grid is the grid clicked last time.</li>
+         <li><b>Dragging by right</b> mouse button scrolls grid section under mouse cursor in the move direction(s)</li>
+         <li style='visibility:hidden;'></li>
+
+			<li><b>Click to</b><u class='TSPanelSelect'></u> / <u class='TSPanelSelectOn'></u>in row panel selects or un-selects row</li>
+         <li><b>Click to<span class="TSCellHeaderPanel"><u class="TSPanelSelect Header"></u> / <u class="TSPanelSelectOn Header"></u></span>in header</b> selects or unselects all rows</li>
+         <li><b>Ctrl + Click to<span class="TSCellHeaderPanel"><u class="TSPanelSelect Header"></u> / <u class="TSPanelSelectOn Header"></u></span>in header</b> inverts selection of all rows</li>
+			<li><b>Dragging</b><u class='TSPanelSelect'></u> / <u class='TSPanelSelectOn'></u>in row panel inverts selection in continuous range of rows</li>
+         <li><b>Ctrl + Dragging cell</b> selects or unselects range of rows or cells</li>
+			<li><b>Ctrl + Click</b> selects or unselects clicked row</li>
+			<li><b>Shift + Click</b> selects range of rows between focused and clicked, include these two. If any row in the range is selected, unselects the range</li>
+         <li style='visibility:hidden;'></li>
+
+			<li><b>Click to</b><u class="TSPanelDelete"></u>in row panel deletes or un-deletes row</li>
+         <li><b>Click to<span class="TSCellHeaderPanel"><u class="TSPanelDelete Header"></u></span>in header</b> panel deletes or un-deletes selected rows</li>
+			<li><b>Click to</b><u class="TSPanelCopy"></u>in row panel adds new row or or duplicates the row or copies selected rows above or below the row</li>
+         <li><b>Click to<span class="TSCellHeaderPanel"><u class="TSPanelCopy Header"></u></span>in header</b> panel adds new row or duplicates focused row or copies selected rows above or below focused row</li>
+         <li><b>Dragging</b><u class="TSPanelMove"></u>moves row to new position, always moves single row, not selected rows</li>
+         <li><b>Dragging<u class="TSPanelMove"></u>by right</b> mouse button copies row to new position, always moves single row, not selected rows</li>
+         <li><b>Ctrl + Dragging<u class="TSPanelMove"></u>by right</b> mouse button copies row and its children to new position, always moves single row, not selected rows</li>
+			<li><b>Dragging cell</b> moves row to new position indicated by icon in the tree:
+            <u class="TSND0"></u>cannot drop to this position,
+				<u class="TSND1"></u>drop above this row,
+				<u class="TSND3"></u>drop below this row, 
+				<u class="TSND2"></u>drop into row's children, to the end.<br>
+            In plain grid without tree the potential drop position is marked by<u class="TSDragRowLeft"></u>blue arrows.<br />
+				If you drag <b>selected</b> row, all selected rows are dragged together to new place, but only if they are all of the same type.<br> 
+				You can drag rows even among more grids, if these are present. In master-detail you can drag rows from detail to master to move rows from one detail row to another.<br>
+				<b>When dragging</b>, there are other functions available:<br>
+				<ul>
+				<li>&nbsp;When mouse moves above<u class="TSE"></u>icon, the row expands its children.</li> 
+				<li>&nbsp;When mouse moves above header or head rows, the grid scrolls up, above toolbar or foot rows, the grid scrolls down. To scroll you can use mouse wheel too.</li>
+				<li>&nbsp;When mouse moves above pager, the grid switches to page under mouse cursor.</li>
+				</ul></li>
+         <li><b>Dragging cell</b> with <b>ctrl</b> copies row or selected rows to new position</li>
+			<li style='visibility:hidden;'></li>
+
+         <li><b>Click to<u class="TSFilter0Left"></u>in filter</b> shows menu to choose filter operator</li>
+         <li><b>Click to<u class="TSFilter0"></u> / <u class="TSFilter1"></u>in filter / group / search row panel</b> enables / disables actual filter / group / search settings</li>
+         <li><b>Click to<u class="TSBoolX"></u>in filter cell</b> enables boolean filter by value 1, 
+            next click to<u class="TSBool1"></u>filters by value 0 
+            and next click to<u class="TSBool0"></u>switches the filter back off</li>
+         <li style='visibility:hidden;'></li>
+
+			<li><b>Click to header</b> cell sorts rows by this column ascending, next click sorts descending.<br /> 
+				Sort direction and order is indicated by sorting icon:<u class="TSSort0Left Header"></u>no sort, 
+				<u class="TSSort1Left Header"></u>first column ascending, 
+            <u class="TSSort4Left Header"></u>first column descending, 
+				<u class="TSSort2Left Header"></u><u class="TSSort5Left Header"></u>second column,
+				<u class="TSSort2Left Header"></u><u class="TSSort5Left Header"></u>third column.
+         </li>
+         <li><b>Ctrl + Click to more header</b> cells within 2 seconds adds these columns to sorting in this order.</li>
+         <li style='visibility:hidden;'></li>
+
+			<li><b>Dragging column's edge in header</b> resizes column. Dragging right side pager header edge resizes pager.</li>
+			<li><b>Dragging column's header</b> moves column to new position.<br /> 
+				New potential position is marked by<u class="TSDragColInsideTop"></u>blue arrows inside the same section and<u class="TSDragColOutsideTop"></u>red arrows outside.<br />
+            While dragging column on edge of scrollable column section, it scrolls left or right.
+            </li>
+         <li><b>Dragging column's header to group row</b> adds this column to grouping and groups by it.<br />
+         Dragging column's header within the group row changes the grouping order. <br />
+         Dragging column's header outside the grouping row removes the column from grouping.</li>
+         <li><b>Dragging separator between horizontal sections</b> (left/middle and middle/right) resizes / shrinks the column sections</li>
+         <li style='visibility:hidden;'></li>
+
+         <li><b>Click to </b><u class='TSBool1'></u> / <u class='TSBool0'></u> / <u class='TSBoolX'></u>in cell changes value of boolean cell or cell with side checkbox.</li>
+  			<li><b>Click to</b><u class="TSDateLeft"></u>in cell side shows calendar to change date value</li>
+         <li><b>Click to</b><u class="TSDefaultsLeft"></u>in cell side shows list of predefined values for the cell</li>
+         <li><b>Click to</b><u class="TSFileLeft"></u>in cell side shows dialog to pick up files</li>
+         <li><b>Click to</b><u class="TSClearLeft"></u>in cell side clears the cell, usually the attached files</li>
+			<li><b>Click to</b><u class="TSE"></u>in tree column expands row's children</li>
+			<li><b>Click to</b><u class="TSC"></u>in tree column collapses row's children</li>
+			<li><b>Click to<span class="TSHeaderRow"><u class="TSExpandLeft Header"></u></span>in header</b> expands column's children</li>
+			<li><b>Click to<span class="TSHeaderRow"><u class="TSCollapseLeft Header"></u></span> in header</b> collapses column's children</li>
+         <li style='visibility:hidden;'></li>
+         
+         <li><b>Dragging cell with Shift</b> fills values of all selected cells by the first cell in the range</li>
+		</ul>
+
+      <a name="Sheet"></a>
+      <h2>Mouse functions specific for Sheet</h2>
+      <ul>
+         <li><b>Click to cell</b> focuses single cell and lets edit (editable) cell (by pressing character key).</li>
+         <li><b>Shift + Click</b> enlarges focused cells rectangle to the clicked cell.</li>
+         <li><b>Dragging cell</b> resizes focused cells rectangle.</li>
+         <li><b>Dragging bottom right corner</b> of focused cell or cells rectangle fills the cells by values calculated from original focused area.</li>
+         <li><b>Dragging edge</b> of focused cell or cells rectangle moves the cell values to another location.</li>
+         <li><b>Dragging edge</b> of focused cell or cells rectangle with <b>ctrl</b> copies the cell values to another location.</li>
+         <li><b>Dragging index cell</b> top / bottom <b>edge</b> resizes the row.</li>
+         <li style='visibility:hidden;'></li>
+
+         <li><b>Dragging column's header</b> moves column or selected columns to new position.<br />
+         <li><b>Dragging column's header</b> with <b>ctrl</b> copies column or selected columns to new position.<br />
+         <li><b>Dragging sheet name tab</b> moves sheet to new position.<br />
+         <li><b>Dragging sheet name tab</b> with <b>right</b> button copies sheet to new position.<br />
+         <li style='visibility:hidden;'></li>
+
+         <li><b>Dragging cells during editing</b> selects cells range and adds it to formula.<br />
+         <li><b>Dragging cells during editing</b> with <b>ctrl</b> selects cells range and replaces all the ranges in formula.<br />
+         <li><b>Click cell during editing</b> with <b>ctrl</b> selects cell and adds it to formula.<br />
+         <li><b>Click cell during editing</b> with <b>shift</b> selects cell and replaces all the ranges in formula.<br />
+
+         <li style='visibility:hidden;'></li>
+  			<li><b>Click to</b><u class='TSPanelSelect'></u> / <u class='TSPanelSelectOn'></u>in column panel selects or un-selects column</li>
+         <li><b>Click to<u class="TSPanelSelect"></u> / <u class="TSPanelSelectOn"></u>in index</b> column panel selects or unselects all columns</li>
+         <li><b>Ctrl + Click to<u class="TSPanelSelect"></u> / <u class="TSPanelSelectOn"></u>in index</b> inverts selection of all columns</li>
+			<li><b>Dragging</b><u class='TSPanelSelect'></u> / <u class='TSPanelSelectOn'></u>in column panel inverts selection in continuous range of columns</li>
+         <li style='visibility:hidden;'></li>
+
+			<li><b>Click to</b><u class="TSPanelDelete"></u>in column panel deletes or un-deletes column</li>
+         <li><b>Click to<u class="TSPanelDelete"></u>in index</b> column panel deletes or un-deletes selected columns</li>
+			<li><b>Click to</b><u class="TSPanelCopy"></u>in column panel adds new column or or duplicates the column or copies selected columns left or right the column</li>
+         <li><b>Click to<u class="TSPanelCopy"></u>in index</b> column panel adds new column or duplicates focused column(s) or copies selected column(s) left or right focused column</li>
+      </ul>
+
+      <a name="Gantt"></a>
+      <h2>Mouse functions in Gantt chart</h2>
+      <ul>
+         <li><b>Dragging bar edge</b> resizes the bar. Resizing the bar to zero width deletes the bar.</li>
+         <li><b>Dragging bar or icon</b> moves the item inside the cell</li>
+         <li><i>Only the Run bars or flag icons can be moved to another row or grid, this behavior is not set by default, but can be done by any mouse dragging action.</i></li>
+         <li><b>Dragging from bar or milestone icon outside the row</b> to another bar or milestone icon creates new dependency between the items.</li>
+         <li><b>Dragging on empty space</b> creates new bar.</li>
+         <li><b>Dragging</b> with <b>shift</b> selects Run boxes inside rectangle.</li>
+         <li><b>Ctrl + Click to bar or icon or dependency end</b> deletes the item</li>
+         <li><b>Double Click to bar or item or dependency end</b> changes the item, e.g. lets enter text of the bar, lets assign resources, lets enter dependency lag etc. Or it can select Run box.</li>
+         <li><b>Double Click to empty space</b> creates new icon at the point</li>
+         <li><b>Ctrl + Right Click to bar</b> changes percentage completion to the selected point</li>
+         <li><b>Shift + Right Click to bar</b> lets enter the percentage completion</li>
+         <li><b>Right Click to cell</b> shows popup menu with all action items related to Gantt item under mouse cursor</li>
+         <li style='visibility:hidden;'></li>
+         <li><b>Dragging Gantt header</b> zooms to selected date range</li>
+         <li><b>Click to Gantt header</b> zooms to selected date</li>
+         <li><b>Right Click to Gantt header</b> unzooms back to previous zoom level or zooms out</li>
+      </ul>
+
+      <a name="Touch"></a>
+      <h2>Touch screen functions (especially for Apple iPad tablets and Android tablets)</h2>
+      <ul>
+         <li>Touch pads support all standard mouse functions except with <b>Right mouse button</b> and with control keys <b>Ctrl</b> and <b>Shift</b></li>
+         <li><i>All touch pad events can be customized independently on the standard mouse and key events</i></li>
+         <li style='visibility:hidden;'></li>
+
+         <li><b>Scrollbars</b> behave like standard browser scrollbars. <br />
+         Dragging the slider scrolls in opposite direction, <br />
+         touching arrows instantly scrolls in the direction slowly, <br />
+         touching between slider and arrow instantly scrolls in the direction faster.<br />
+         The <b>scrollbar size</b> can be chosen in configuration menu<em class="TSToolCfg"></em>by Scrollbar type menu item.
+         </li>
+         <li style='visibility:hidden;'></li>
+
+         <li><b>Dragging not focused cell</b> by one finger scrolls grid horizontally or vertically or scrolls tablet surface as standard tablet feature.</li>
+         <li><b>Tap to cell</b> focuses the cell.</li>
+         <li><b>Long tap to cell</b> shows popup menu for the cell, if defined. Long tap lasts 500ms (can be customized).</li>
+         <li><b>Dragging focused cell</b> by one finger moves the row to another position or focuses cell range in Sheet.</li>
+         <li><b>Tap to focused cell</b> starts editing the cell.</li>
+         <li><b>Finish editing</b> - editing finishes by tapping enter on keyboard or tapping outside the cell.<br />
+            There is no escape, you can cancel the changes by tapping Undo on keyboard or accept the changes and click to TreeGrid Undo button<em class="TSToolUndo1"></em>.
+         </li>
+         <li><b>Tapping focused cell by two fingers</b> shows popup menu for the cell, if defined. Tap by one finger while the second finger is touching pad.</li>
+         <li><b>Dragging cell by two fingers</b> zooms page as standard iPad feature.</li>
+         <li><b>Dragging<u class="TSPanelMove"></u></b>by one finger moves row to new position like dragging by mouse</li>
+         <li><b>Dragging<u class="TSPanelMove"></u>by two fingers</b> copies row like dragging by mouse right button</li>
+         <li><b>Dragging<u class="TSPanelMove"></u>by three fingers</b> copies row and its children like dragging by mouse right button with ctrl</li>
+         <li style='visibility:hidden;'></li>
+
+         <li><b>Dragging<u class="TSPanelSelect"></u> / <u class="TSPanelSelectOn"></u></b>by one finger inverts selection in continuous range of rows like dragging by mouse</li>
+         <li style='visibility:hidden;'></li>
+
+         <li><b>Dragging header</b> by one finger behaves like by mouse, resizes column by dragging edge, moves or groups column by dragging body. Including pager header.</li>
+         <li><b>Dragging separator between horizontal sections</b> by one finger (left/middle and middle/right) resizes / shrinks the column sections</li>
+         <li style='visibility:hidden;'></li>
+      </ul>
+
+      <a name="TouchGantt"></a>
+      <h2>Touch screen functions in Gantt chart (especially for Apple iPad tablets and Android tablets)</h2>
+      <ul>
+         <li><b>Dragging not focused cell</b> by one finger scrolls grid horizontally or vertically or scrolls tablet surface as standard tablet feature.</li>
+         <li><i>On touch screen there should be editing menu or toolbar to choose which bars and editing actions will be permitted, to simplify editing.</i></li>
+         <li><b>Tap to bar, icon or dependency</b> focuses the item. It also focused the Gantt cell.</li>
+         <li><b>Tap to empty space</b> or inactive item focuses the Gantt cell.</li>
+         <li><b>Tap to focused bar, icon or depencency</b> shows popup menu to choose the action to do.</li>
+         <li><b>Tap to empty space in focused cell</b> shows popup menu to choose the action to do.</li>
+         <li><b>Long tap to not focused object or cell</b> shows popup menu to choose the action to do.</li>
+         <li><b>Dragging focused bar edge</b> resizes the bar.</li>
+         <li><b>Dragging focused bar or icon</b> moves the item. If the item cannot be moved and supports dependencies, it creates new dependency.</li>
+         <li><b>Dragging not focused bar or icon in focused cell</b> creates new dependency from the item.</li>
+         <li><b>Dragging empty space in focused cell</b> creates new bar.</li>
+         <li style='visibility:hidden;'></li>
+         <li><b>Dragging Gantt header by one finger</b> zooms to selected date range</li>
+         <li><b>Dragging Gantt header by two fingers (pinch zoom)</b> zooms to chosen scale</li>
+         <li><b>Tap to Gantt header</b> by one finger shows popup menu to choose the action to do.</li>
+      </ul>
+     
+      <a name="Keys"></a>
+		<h2>Control keys</h2>
+		<ul>
+			<li><b>Arrow keys</b> change focused cell</li>
+         <li><b>Shift + arrow keys</b> resizes focused cells range in Sheet</li>
+         <li><b>Left / right arrow in edit</b> mode move standard edit cursor left / right.</li>
+         <li><b>Up / down arrow in edit</b> mode move focus to above or below cell. In Lines type ir moves standard edit cursor up / down.</li>
+			<li><b>Tab</b> moves focus to the next cell.</li>
+			<li><b>Shift + Tab</b> moves focus to the prior cell.</li>
+			<li><b>Tab in edit</b> mode edits next editable cell</li>
+			<li><b>Shift + Tab in edit</b> mode edits prior editable cell</li>
+         <li><b>Tab in Sheet</b>, if focused cells range, moves only main focus cell, not the whole cell range.</li>
+         <li><b>Any character key</b> starts edit focused cell</li>
+			<li><b>Enter</b> or <b>F2</b> starts edit focused cell</li>
+			<li><b>Enter</b> in edit mode confirms edit changes</li>
+			<li><b>Alt + Enter</b> in edit mode in multi line textarea confirms edit changes</li>
+			<li><b>Ctrl + Enter</b> in edit mode in multi line textarea confirms edit changes</li>
+			<li><b>Esc</b> in edit mode cancels edit changes</li>
+         <li><b>Space</b> checks or unchecks Bool type cell</li>
+         <li><b>Space</b> selects or unselects row</li>
+			<li><b>Ctrl + Space</b> selects or unselects all rows</li>
+			<li><b>Del</b> deletes or un-deletes row</li>
+			<li><b>Ctrl + Del </b>deletes or un-deletes selected rows</li>
+			<li><b>Ins</b> inserts new row to cursor position</li>
+			<li><b>Ctrl + Ins</b> inserts new row into children of focused row</li>
+         <li><b>Shift + Ins</b> copies focused row above</li>
+         <li><b>Shift + Ctrl + Ins</b> copies focused row with its children above</li>
+			<li><b>Ctrl + Enter </b>expands / collapses row's children</li>
+			<li><b>Home</b> focuses first variable row</li>
+			<li><b>End</b> focuses last variable row</li>
+			<li><b>Page Up</b> moves focus up by one page</li>
+			<li><b>Page Down</b> moves focus down by one page</li>
+			<li><b>Ctrl + Enter</b> not in edit mode expands or collapses row's children</li>
+         <li><b>Ctrl + Z</b> undoes last change in data, if undo is permitted</li>
+         <li><b>Ctrl + Y</b> does again the last undone change</li>
+         <li><b>Ctrl + down arrow</b> shows popup dialog with defaults or other list or calendar if the cell has defined some</li>
+         <li><b>Ctrl + left / right arrow</b> moves selected Radio left or right</li>
+         <li><b>F4 in edit</b> mode in Sheet switches between absolute and relative cell references when editing formula</li>
+		</ul>
+
+      <a name="CopyPaste"></a>
+		<h2>Copy &amp; paste</h2>
+      <i>Copying and pasting is done by hot keys. The copying to clipboard can be done also from popup menu. Pasting can be done only by Ctrl+V hotkey.</i><br />
+		<ul>
+			<li><b>Ctrl + C</b> (or <b>Meta + C</b> on Mac) copies to clipboard values from all selected rows or focused row or all selected cells or focused cells range - depends on grid settings.<br />
+			Only if grid is not in edit mode. Data are in plain text, cells are separated by tabulator, rows are separated by enter (CRLF).<br />
+			This data can be pasted back to the grid or to any text editor or spreadsheet program like MS Excel. 
+         </li>
+         <li><b>Ctrl + X</b> (or <b>Meta + X</b> on Mac) excludes to clipboard values like by Ctrl+C, but deletes the rows or clears the copied cells.<br />
+         <li><b>Ctrl + V</b> (or <b>Meta + V</b> on Mac) pastes values from clipboard to selected rows or to focused row or adds the rows below focused row or to focused cell range - depends on grid settings.<br />
+         Only if grid is not in edit mode.
+			Cells in data are tab separated, rows are CRLF or CR or LF separated. Changes only cells that can be edited. <br />
+			If pasted data has less columns than grid, pastes them from actual focused column, otherwise from first column. </li>
+      </ul>
+
+      <a name="Toolbar"></a>
+		<h2>Toolbar</h2>
+      <i>The button is shown only if the grid permits the action. The buttons can be shown also in another row or in more rows.</i>
+      
+		<ul class="ToolbarHelp">
+         <li><em class="TSToolImport"></em><b>Opens</b> chosen xlsx file from local or remote disk in grid.</li>
+			<li><em class="TSToolSave"></em><b>Submits</b> <b>changed data</b> to server and accepts all pending changes, if server validated them, otherwise marks invalid cells.</li>
+         <li><em class="TSToolReload"></em><b>Reloads</b> <b>data</b> from server and cancels pending changes.</li>
+         <li><em class="TSToolRepaint"></em> / <em class="TSToolRepaint1"></em><b>Renders all pages</b> or switches off rendering all pages</li>
+         <li><em class="TSToolPrint"></em><b>Prints the grid</b>, opens new browser window with printable version of the grid</li>
+         <li><em class="TSToolExportPDF"></em><b>Exports (prints) the grid to PDF</b></li>
+         <li><em class="TSToolExport"></em><b>Exports all data</b> to spreadsheet program, to xlsx / xls or csv file</li>
+         <li style='visibility:hidden;'></li>
+         <li><em class="TSToolUndo1"></em><b>Undoes</b> last change in data</li>
+         <li><em class="TSToolRedo1"></em><b>Does again</b> the last undone change</li>
+         <li><em class="TSToolAdd"></em><b>Adds</b> <b>new row</b> to the cursor position if parent row accepts children.
+			   Or if there are <b>selected</b> rows, the menu is displayed and you can choose to move or copy selected rows or to ignore selection and add new row.</li>
+			<li><em class="TSToolAddChild"></em><b>Adds</b> <b>new row</b> to focused row's <b>children</b>, to the end, if this row accepts children
+			   Or if there are <b>selected</b> rows, the menu is displayed and you can choose to move or copy selected rows or to ignore selection and add new row.</li>
+         <li><em class="TSToolAddCol"></em><b>Adds</b> <b>new column</b> to the cursor position.
+			   Or if there are <b>selected</b> columns, the menu is displayed and you can choose to move or copy selected columns or to ignore selection and add new column.</li>
+         <li><em class="TSToolJoin"></em><b>Joins (spans)</b> all selected cells together.</li>
+         <li><em class="TSToolSplit"></em><b>Splits</b> spanned cell.</li>
+         <li><em class="TSToolOutdent"></em><b>Outdents</b> focused row by one level (places it below its parent)</li>
+         <li><em class="TSToolIndent"></em><b>Indents</b> focused row by one level (places into its previous sibling's children, as the last child)</li>
+			<li><em class="TSToolExpandAll"></em><b>Expands all rows</b>. For large grids expands only some rows to avoid locking browser. Starts expanding from focused row.</li>
+			<li><em class="TSToolCollapseAll"></em><b>Collapses all rows</b>.</li>
+         <li style='visibility:hidden;'></li>
+         <li><em class="TSToolLeft"></em><b>Aligns</b> text content <b>left</b>.</li>
+         <li><em class="TSToolCenter"></em><b>Centers</b> text content <b>horizontally</b>.</li>
+         <li><em class="TSToolRight"></em><b>Aligns</b> text content <b>right</b>.</li>
+         <li><em class="TSToolTop"></em><b>Aligns</b> text content <b>top</b>.</li>
+         <li><em class="TSToolMiddle"></em><b>Centers</b> text content <b>vertically</b>.</li>
+         <li><em class="TSToolBottom"></em><b>Aligns</b> text content <b>bottom</b>.</li>
+         <li><em class="TSToolBold"></em>Sets or resets text <b>bold</b>.</li>
+         <li><em class="TSToolItalic"></em>Sets or resets text <b>italic</b>.</li>
+         <li><em class="TSToolUnderline"></em>Sets or resets text <b>underline</b>.</li>
+         <li><em class="TSToolStrike"></em>Sets or resets text <b>strike</b>.</li>
+         <li><em class="TSToolRotateLeft"></em><b>Rotates</b> text <b>left</b>.</li>
+         <li><em class="TSToolRotateRight"></em><b>Rotates</b> text <b>right</b>.</li>
+         <li><em class="TSToolWrapText"></em><b>Wraps</b> or unwraps text.</li>
+         <li><em class="TSToolColorText Popup"></em>Chooses text <b>color</b>.</li>
+         <li><em class="TSToolColorShadow Popup"></em>Chooses text <b>shadow color</b>.</li>
+         <li><em class="TSToolColorBackground Popup"></em>Chooses cell <b>background color</b>.</li>
+         <li><em class="TSToolBorder Popup"></em>Chooses cell <b>border</b> color, thickness and style.</li>
+         <li style='visibility:hidden;'></li>
+         <li><em class="TSToolCorrect1"></em><b>Corrects all dependency errors</b> in Gantt chart. </li>
+         <li><em class="TSToolZoomIn"></em><b>Zooms in</b> Gantt chart. </li>
+         <li><em class="TSToolZoomOut"></em><b>Zooms out</b> Gantt chart. </li>
+         <li><em class="TSToolZoomFit"></em><b>Zooms to fit</b> to window size the Gantt chart. </li>
+         <li style='visibility:hidden;'></li>
+         <li><em class="TSToolPagerFirst"></em><b>Goes to the first page</b></li>
+         <li><em class="TSToolPagerPrev"></em><b>Goes to the previous page</b></li>
+         <li><em class="TSToolPagerNext"></em><b>Goes to the next page</b></li>
+         <li><em class="TSToolPagerLast"></em><b>Goes to the last page</b></li>
+         <li style='visibility:hidden;'></li>
+			<li><em class="TSToolSort1"></em><b>Enables</b> or disables <b>sorting</b>. When enabling sorting, re-sorts grid according to actual sorting.
+			   You can disable sorting, if you need to choose new sorting according to more columns to avoid multiple re-sorting, especially in paged grids.</li>
+         <li><em class="TSToolCalc1"></em><b>Enables</b> or disables <b>calculations</b>. When enabling calculations, re-calculates all cells.
+            You can disable calculations when editing large grids.</li>
+			<li><em class="TSToolColumns"></em>Displays menu to choose which <b>columns</b> will be <b>displayed</b>. </li>
+			<li><em class="TSToolCfg"></em><b>Displays</b> TreeGrid <b>configuration</b> window. 
+            These settings are saved to client cookies and therefore are persistent. See Configuration description below.</li>
+			<li><em class="TSToolHelp"></em><b>Displays</b> this <b>help</b></li>
+         <li><em class="TSToolDebug"></em><b>Displays debug</b> window</li>
+         <li style='visibility:hidden;'></li>
+			<li><em class="TSResizeGrid"></em>You can <b>resize grid</b> by mouse dragging this icon on the right bottom corner. By double click you can restore to original size.</li>
+			</ul>
+
+      <a name="Configuration"></a>
+		<h2>Configuration</h2>
+      <i>The item is shown only if the grid permits the action.</i>
+		<ul>
+			<li><b>Show deleted rows (in red)</b>. 
+				If checked, deleted rows are still visible and colored and can be undeleted. If you check Auto updates, this option have no sense.</li>
+         <li><b>Reversed tree (like in MS Excel)</b>. 
+				If checked, parent row's children are shown above the parent row instead of below.</li>
+			<li><b>Auto sort rows after change</b>. 
+				If checked, after user modify value in column according to is grid sorted, row is sorted and moved to the new position</li>
+         <li><b>Sort click</b>. How sorting can be set by clicking to column caption.</li>
+			<li><b>Auto update changes to server</b>.
+				If checked, all modifications (value changing, rows moving, adding, deleting) are immediately uploaded to server. 
+				Does not wait for server response, grid is still accessible. After server response clears changed flags.
+				If it is not checked, updates can be send by submit button<em class="TSToolSave"></em>.</li>
+         <li><b>Check for updates on server</b>. How often the grid checks new data on server when used synchronization with server.</li>
+         <li style='visibility:hidden;'></li>
+         <li><b>Scrollbars type</b>. Scrollbars size (none, thin, standard, wide), especially for touch screens (iPad).</li>
+         <li><b>Scroll by</b>. The way of scrolling by dragging content at touch screen (iPad). (none, by one finger, two fingers, three fingers).</li>
+			<li><b>Mouse hover</b>. What blinks under mouse cursor. Hovering all cells can slow down browser responses.</li>
+			<li><b>Show dragged object</b>. If checked, dragging rows or moving columns are attached to the mouse cursor.</li>
+			<li><b>Show row's left panel</b>. If it is not checked, the left panel<u class="TSPanelSelect"></u><u class="TSPanelDelete"></u>
+                is hidden and its functions can be performed by keys only.</li>
+			<li><b>Show pager</b>. If checked, the pager with page names is visible on the right of the grid.</li>
+			<li><b>Show all pages</b>. If checked, all pages are visible at once and can be accessed by sliding scrollbar or moving cursor. 
+				The page is rendered only when is scrolled to the window. 
+				<br>If it is not checked, only one page is visible at a time and other pages can be accessed by clicking on pager or by PgUp and PgUp keys.
+         </li>
+         <li><b>Show buttons</b>. If shows toolbar buttons with their texts, possible options: Icons only, Texts only, Icons and texts.</li>
+		</ul>
+
+      <a name="ConfigurationGantt"></a>
+   	<h2>Configuration items for Gantt chart</h2>
+      <i>The item is shown only if the grid permits the action.</i>
+      <ul>
+         <li><b>Circular dependencies</b>. If creating circular dependencies is permitted, like A -> B -> C -> A.</li>
+         <li><b>Starting tasks on holidays</b>. If permitted to start tasks on excluded dates. Just "visual" setting, all calculations in chart are always done only in non excluded dates.</li>
+         <li><b>Incorrect manual inputs</b>. How the changes done in Gantt source cells are handled, if violate the Gantt constraints and other restrictions.</li>
+         <li><b>Schedule tasks</b>. If the tasks are scheduled automatically or manually after any change in Gantt chart.</li>
+         <li><b>Schedule tasks from</b>. Scheduling direction, from project start or finish.</li>
+         <li><b>Schedule tasks method</b>. How much the tasks are moved to satisfy their dependencies and constraints.</li>
+         <li><b>Auto schedule also the changed task</b>. For "on" it can move also the tasks, its change invoked the correcting dependencies. For "off" this task is never moved.</li>
+         <li><b>Schedule also already started tasks</b>. For "off" it never moves tasks with percentage complete > 0. For "on" it ignores percentage completion when correcting dependencies.</li>
+         <li><b>Show holidays in chart</b>. For "off" all the excluded dates are removed from display.</li>
+         <li><b>Can move objects before project start</b>. If Gantt bars and icons can be moved by a user to start before project start</li>
+         <li><b>Can move objects after project finish</b>. If Gantt bars and icons can be moved by a user to end after project finish</li>
+         <li><b>Project start is preferred to constraints</b>. What is preferred when correcting dependencies and there is no room for the task due constraint and project start violation.</li>
+         <li><b>Project finish is preferred to constraints</b>. What is preferred when correcting dependencies and there is no room for the task due constraint and project finish violation.</li>
+         <li><b>Schedule tasks outside project bounds</b>. For "on" permits moving tasks outside project start and project finish during scheduling tasks to correct their dependencies.</li>
+         <li><b>Minimal slack for critical task</b>. If tasks's slack is less than or equal to this value, the task is marked as critical. Slack means, how much can be the task moved right (to be late) to not affect the project finish.</li>
+         <li><b>Minimal slack bound for error task</b>. If tasks's slack is less than this value, the task is marked as error task. It means it should be moved left to correct the project finish violation.</li>
+         <li><b>Calculate critical path individually</b>. For "on" the project finish is calculated for every independent group of tasks. For "off" there will be only one global project finish.</li>
+      </ul>
+
+      <a name="ConfigurationPrint"></a>
+   	<h2>Configuration items for printing and PDF export</h2>
+      <i>The item is shown only if the grid permits the action.</i>
+      <ul>
+         <li><b>File name</b>. Name of file for printing to PDF</li>
+         <li><b>Maximum rows per page</b>. Specifies how many rows can be printed to one page, after that count it prints page break.</li>
+         <li><b>Start page always by root row</b>. For "on" it does not breaks page between child rows, except the child page is higher than page.</li>
+         <li><b>Print all rows expanded</b>. For "on" it expands all rows to print all child rows.</li>
+         <li><b>Print all rows (unfiltered)</b>. For "on" it cancels all filters and prints all rows like there was no filter.</li>
+         <li><b>Print selected rows only</b>. For "on" it print only selected rows in plain table, it ignores their position in tree.</li>
+         <li style='visibility:hidden;'></li>
+         <li><b>Page size</b> Page size to split printed grid to. If printing to printer, it must be the same as printer page size.</li>
+         <li><b>Page orientation</b> Page orientation to correctly split printed grid to. If printing to printer, it must be the same as printer page orientation.</li>
+         <li><b>Page margin width (mm)</b> Left plus right margin reserved in printed page. If printing to printer, it must be the same as page margin on both sides together.</li>
+         <li><b>Page margin height (mm)</b> Top plus bottom margin reserved in printed page. If printing to printer, it must be the same as page margin on both sides together.</li>
+         <li><b>Fit to one page</b> How to scale the printed grid to fit into page. It does not work in Safari when printing to printer.</li>
+         <li><b>DPI (PPI) ratio</b> Dots per pixel, it scales the page size.</li>
+         <li><b>Page width (px)</b> Final page width in pixels, to this value will be the printed grid split horizontally.</li>
+         <li><b>Page height (px)</b> Final page height in pixels, to this value will be the printed grid split vertically.</li>
+      </ul>
+
+      <a name="ConfigurationExport"></a>
+   	<h2>Configuration items for export to xlsx / xls / csv</h2>
+      <i>The item is shown only if the grid permits the action.</i>
+      <ul>
+         <li><b>File name</b>. Name of file with export for download</li>
+         <li><b>File format</b>. Export format, can be native binary xlsx, textual xhtml (fake xls) or textual csv</li>
+         <li><b>Export all rows expanded</b>. For "on" it expands all rows to export all child rows.</li>
+         <li><b>Export all rows (unfiltered)</b>. For "on" it cancels all filters and exports all rows like there was no filter.</li>
+         <li><b>Export tree in Excel outline</b>. Only for xlsx / xls. For csv it adds new column with the outline as characters '#'.</li>
+         <li><b>Indent tree in main column</b>. Adds spaces in beginning of cells in main column, the count of spaces is related to the row level in tree.</li>
+         <li><b>Export selected rows only</b>. For "on" it exports only selected rows in plain table, it ignores their position in tree.</li>
+         <li><b>Freeze (anchor) head rows</b>. Anchors frozen head rows in grid also in the xlsx file.</li>
+         <li><b>Freeze (anchor) left columns</b>. Anchors frozen left columns in grid also in the xlsx file.</li>
+         <li><b>Export also empty cells</b>. For "on" it exports empty cells as actual cells with empty string - overflowing text of preceding cells will be hidden, but the resulting xlsx file of large grids may be larger.</li>
+      </ul>
+
+      <a name="Filter"></a>
+		<h2>Filter row</h2>
+		<ul>
+			<li>Filter row is special row, usually displayed on the top, under header.
+				There can be set filter conditions for every column.
+				If other rows has in this column value which satisfies the filter condition, the row is displayed, otherwise is hidden.</li>
+			<li>Filtered can be only variable rows. Some rows can be marked as always visible. 
+				These are often rows with children rows in tree to filter only some levels.</li>
+			<li>A cell in filter row contains filter operator and its parameter value. 
+				Some operators are used for some column types only. Filtering is fired after operator or value changes.</li>
+			<li>You can select filter operator from menu. 
+				By default filter is disabled:<u style='padding-left:16px;background:url(Compatible/Gradient/Filter.gif) 0px 0px;'></u>.</li>
+		</ul>
+
+      <a name="Group"></a>
+		<h2>Group row</h2>
+		<ul>
+			<li>Group row is special row, usually displayed on the top, under header and fixed rows. 
+			   You can group rows to tree according same values in appropriate column(s).</li>
+			<li>Grouped can be only variable rows. Some rows can be marked that cannot be grouped. 
+				In tree there will be only one level of rows to be grouped.</li>
+			<li>You can select predefined grouping from select box.</li>
+			<li>Or you can drag column caption to the group row to be grouped by this column. If some column(s) are placed there already, 
+			you can put the new column to appropriate place. To remove column from grouping, just drag its caption from group row outside.</li>
+		</ul>
+
+      <a name="Search"></a>
+		<h2>Search row</h2>
+		<ul>
+			<li>Search row is special row, usually displayed on the top, under header and fixed rows.</li>
+			<li>You can search rows or cells in grid for simple string like Google or by complex formula.</li>
+			<li>The found rows can be filtered, selected, colored or focused.</li>
+			<li>Or you can select predefined search formulas from select box.</li>
+         <li>There are many settings to more specify the searching options.</li>
+		</ul>
+
+      <a name="Other"></a>
+		<h2>Other</h2>
+		<ul>
+			<li>If you move focus to another cell in edit mode, the changed value is accepted as if you pressed Enter.</li>
+			<li>After confirm new value after edit, calculated cells are recalculated. 
+				If Auto sort is set and sorting is enabled by this column, row is moved to another position by sort order. 
+				If Auto update is set, value is submitted to server.
+         </li>
+		</ul>
+
+      <a name="Colors"></a>
+		<h2>Colors</h2>
+      Background colors in grid are composed from all the state and style colors of the cell, so the resulted background color can differ from the listed colors.<br />
+		<ul>
+         <li><span class="TSColorDefault Color">text</span> - Standard cell</li>
+         <li><span class="TSColorReadOnly TSClassReadOnly Color">text</span> - Not editable cell</li>
+         <li><span class="TSColorNoFocus TSClassNoFocus Color">text</span> - Cell that cannot be focused</li>
+         <li><span class="TSColorPreview TSClassPreview Color">text</span> - Preview cell - cell can be edited, but not changed - for selecting text in cell</li>
+         <li><span class="TSColorFormula TSClassFormula Color">text</span> - Cell with editable formula in Sheet</li>
+         <li><span class="TSColorAlternate TSClassAlternate Color">text</span> - Alternate color for even rows</li>
+         <li><span class="TSColorSelected TSClassSelected Color">text</span> - Selected row, column or cell</li>
+         <li><span class="TSColorError TSClassError Color">text</span> - Cell with error</li>
+         <li style='visibility:hidden;'></li>
+         <li><span class="TSColorDeleted TSClassDeleted Color">text</span> - Deleted row</li>
+			<li><span class="TSColorAdded TSClassAdded Color">text</span> - Added row</li>
+         <li><span class="TSColorMoved2 TSClassMoved2 Color">text</span> - Moved row to another parent in tree</li>
+         <li><span class="TSColorChanged TSClassChanged Color">text</span> - Row with changed cell(s)</li>
+         <li><span class="TSColorChangedCell TSClassChangedCell Color">text</span> - Changed cell</li>
+         <li style='visibility:hidden;'></li>
+         <li><span class="TSColorDetail TSClassDetail Color">text</span> - Master row - row containing detailed information that can be displayed in detail grid</li>
+         <li><span class="TSColorDetailSelected TSClassDetailSelected Color">text</span> - Master row that displays its detailed information in detail grid</li>
+         <li><span class="TSColorDragged TSClassDragged Color">text</span> - Source row being actually dragged</li>
+         <li><span class="TSColorCellMenu TSClassCellMenu Color">text</span> - Source cell that displays its popup menu</li>
+         <li style='visibility:hidden;'></li>
+         <li><span class="TSHoverCellBorder Color2"><span class="TSColorHoveredCell TSClassHoveredCell Color">text</span></span> - Cell under mouse cursor</li>
+         <li><span class="TSHoverCellBorder Color2"><span class="TSColorHoveredCellReadOnly TSClassHoveredCellReadOnly Color">text</span></span> - Not editable cell under mouse cursor</li>
+         <li><span class="TSHoverCellBorder Color2"><span class="TSColorHoveredCellNoFocus TSClassHoveredCellReadOnly Color">text</span></span> - Cell that cannot be focused under mouse cursor</li>
+         <li><span class="TSHoverRowBorder Color2"><span class="TSHoverRowBackground Color">text</span></span> - Row under mouse cursor</li>
+         <li><span class="TSFocusCellBorder Color2"><span class="TSColorFocusedCell TSClassFocusedCell Color">text</span></span> - Focused cell(s)</li>
+         <li><span class="TSEditCellBorder Color2"><span class="TSColorEditedCell TSClassEditedCell Color">text</span></span> - Focused cell being edited</li>
+         <li><span class="TSEditCellBorder Color2"><span class="TSColorViewedCell TSClassViewedCell Color">text</span></span> - Focused cell in preview mode - edit but cannot be changed</li>
+         <li><span class="TSColorFocusedCellRect TSClassFocusedCellRect Color">text</span> - Main focused cell (the one that will be edited) if focused rectangle of cells</li>
+         <li><span class="TSFocusRowBorder Color2"><span class="TSFocusRowBackground Color">text</span></span> - Focused row</li>
+         <li style='visibility:hidden;'></li>
+         <li><span class="TSColorFound1 TSClassFound1 Color">text</span> - Found cell 1 - for Search Mark</li>
+         <li><span class="TSColorFound2 TSClassFound2 Color">text</span> - Found cell 2 - for Search Mark</li>
+         <li><span class="TSColorFound3 TSClassFound3 Color">text</span> - Found cell 3 - for Search Mark</li>
+		</ul>
+		<h2>More info</h2>
+		<ul>
+			<li><a href="http://www.treegrid.com/" target="_top">http://www.treegrid.com/</a></li>
+		</ul>
+   </div>
+	</body>
+</html>
